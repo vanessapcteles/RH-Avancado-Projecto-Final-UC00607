@@ -2,8 +2,7 @@
 #include "calendario.h"
 #include "io.h"
 #include "reports.h" // Inclui os novos relatórios
-#include "calendario.cpp"
-#include "io.cpp"
+
 #include "cores.h"
 #include <limits>
 #include <cstdlib>
@@ -11,15 +10,9 @@
 #include <cstddef>
 #include <sstream>
 #include <algorithm>
+#include <vector>
 
-// Cores (Definições globais)
 
-const std::string COR_AZUL = "\033[34m";        // Títulos
-const std::string COR_ROXO = "\033[35m";        // Faltas
-const std::string COR_VERDE = "\033[32m";       // Sucesso/Confirmações
-const std::string COR_VERMELHA = "\033[31m";    // Erros
-const std::string COR_AMARELA = "\033[33m";     // Avisos
-const std::string RESET_COR = "\033[0m";        // Reset das cores para terminal
 // Função para limpar a consola (dependente do SO)
 void limparConsola();
 
@@ -172,7 +165,7 @@ void menuVisualizarCalendario(const std::vector<Colaborador>& lista) {
 
 int main() {
     std::vector<Colaborador> listaColaboradores;
-    const std::string FICHEIRO_DADOS = "rh_data.dat";
+    const std::string FICHEIRO_DADOS = "rh_data.txt";
 
     // Carregar dados ao iniciar
     carregarDados(listaColaboradores, FICHEIRO_DADOS);
@@ -225,7 +218,7 @@ int main() {
             case 10: // Exportação
                 exportarDados(listaColaboradores);
                 break;
-            case 11:
+            case 0:
                 // Guardar dados ao sair
                 guardarDados(listaColaboradores, FICHEIRO_DADOS);
                 std::cout << COR_VERDE << "Dados guardados. Obrigado!\n" << RESET_COR;

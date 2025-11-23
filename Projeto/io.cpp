@@ -37,13 +37,7 @@ std::string desencriptar(const std::string& texto, int chave) {
     return resultado;
 }
 
-// ... Coloque aqui a implementação completa de encriptar ...
-
-std::string desencriptar(const std::string &texto, int chave) {
-    return encriptar(texto, 26 - (chave % 26)); 
-}
-
-// ... Coloque aqui a implementação completa de tipoParaString ...
+// Função para converter TipoMarcacao para string
 std::string tipoParaString(TipoMarcacao tipo) {
     switch (tipo) {
         case TipoMarcacao::FERIAS: return "F";

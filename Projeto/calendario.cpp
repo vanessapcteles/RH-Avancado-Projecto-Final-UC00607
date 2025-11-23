@@ -63,11 +63,7 @@ void visualizarCalendario(const Colaborador& colab, int mes, int ano) {
         int diaSemAtual = diaSemana(dia, mes, ano);
         char marcador = ' ';
         std::string cor;
-        obterMarcadorEcor(colab, diaDoAno, diaSemAtual, marcador, cor);
-        std::cout << cor << std::setw(2) << dia << marcador << " " << RESET_COR;
-        if ((diaSemAtual + dia) % 7 == 0) {
-            std::cout << "\n"; // Nova linha ao fim da semana
-        }
+
     }
     std::cout << "\n";
 }
@@ -134,8 +130,7 @@ void contarAusenciasMensal(const Colaborador& colab, int mes, int ano, int& tota
 // Função para verificar conflito de férias no departamento
 bool verificarConflitoFerias(const Colaborador& colab, int dia, int mes, int ano) {
     int diaDoAno = dataParaDiaDoAno(dia, mes, ano);
-    // Aqui você precisaria de acesso à lista de colaboradores do mesmo departamento
-    // Esta função atualmente não tem esse acesso, então retornamos false por padrão
+    
     return false; // Implementação de conflito depende do contexto externo
 }
 // Função auxiliar para obter marcador e cor para o calendário
