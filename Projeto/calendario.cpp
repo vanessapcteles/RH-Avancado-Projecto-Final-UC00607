@@ -1,244 +1,177 @@
 #include "calendario.h"
 #include "colaborador.h"
 #include "reports.h"
+#include "io.h"
+#include "cores.h"
+#include <ctime>
+#include <algorithm>
+#include <vector>
 #include <iostream>
 #include <iomanip>
 #include <string>
 #include <map>
 #include <array>
 
-// Cores para terminal (Códigos ANSI)
-const std::string RESET_COR = "\033[0m"; // Reseta cor/estilo para o padrão
-const std::string COR_FERIAS = "\033[34m"; // Azul (para Ferias 'F')
-const std::string COR_FALTA = "\033[31m"; // Vermelho (para Faltas 'X')
-const std::string COR_FIM_SEMANA = "\033[90m"; // Cinzento Claro (para Fins de Semana)
 
-// Função para calcular o dia da semana
-// Usa a congruência de Zeller para determinar o dia da semana de qualquer data.
-// Retorna: 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
-int diaSemana(int dia, int mes, int ano) {
-    if (mes < 3) {
-        mes += 12;
-        ano -= 1;
-    }
-    int k = ano % 100;
-    int j = ano / 100;
-    // h é o valor de Zeller: 0 = Sábado, 1 = Domingo, 2 = Segunda, ..., 6 = Sexta
-    int h = (dia + (13 * (mes + 1)) / 5 + k + (k / 4) + (j / 4) + (5 * j)) % 7;
-    if (h < 0) h += 7;
-    // Converter para o formato desejado: 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
-    int resultado = (h + 6) % 7;
-    return resultado;
-}
-
-// Função para calcular o número de dias num mês
-// Esta função trata corretamente anos bissextos.
-int diasNoMes(int mes, int ano) {
-    switch (mes) {
-        case 1: case 3: case 5: case 7: case 8: case 10: case 12:
-            return 31;
-        case 4: case 6: case 9: case 11:
-            return 30;
-        case 2:
-            // Verifica se é ano bissexto
-            if ((ano % 4 == 0 && ano % 100 != 0) || (ano % 400 == 0)) {
-                return 29;
-            } else {
-                return 28;
-            }
-        default:
-            return 0; // Mês inválido
-        }
-        return 0; // Mês inválido
-}
-std::string nomeMes(int mes){
-    static const std::array<std::string, 12> meses = {{"Janeiro","Fevereiro","Marco","Abril","Maio","Junho",
-                                                      "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"}};
-    // Se o mês for válido (1 a 12), retorna o nome. Caso contrário, retorna string vazia.
-    if (mes >= 1 && mes <= 12) {
-        return meses[mes-1];
-    }
-    return std::string();
-}
-
-
-// --- Funções de Validação e Conversão ---
-
-// Verifica se a data é válida (mês dentro do intervalo, dia dentro do número de dias do mês)
-bool dataValida(int dia, int mes, int ano) {
-    // Restrição de ano para um intervalo prático
-    if (mes < 1 || mes > 12 || ano < 1900 || ano > 2100) { 
-        return false;
-    }
-    // Verifica se o dia existe no mês e ano dado
-    if (dia < 1 || dia > diasNoMes(mes, ano)) {
-        return false;
-    }
-    return true;
-}
-
-// Converte a data (dia, mês, ano) no dia do ano (1 a 366)
-int dataParaDiaDoAno(int dia, int mes, int ano) {
-    if (!dataValida(dia, mes, ano)) return -1; // Data inválida
-
-    int diaDoAno = 0;
-    for (int m = 1; m < mes; ++m) {
-        diaDoAno += diasNoMes(m, ano);
-    }
-    diaDoAno += dia;
-    return diaDoAno;
-}
-
-// --- Funções de Marcação ---
-
-// Função auxiliar para obter o nome do TipoMarcacao para feedback
-std::string tipoParaString(TipoMarcacao tipo) {
-    switch (tipo) {
-        case TipoMarcacao::FERIAS: return "F";
-        case TipoMarcacao::FALTA: return "X";
-        default: return " "; // Desconhecido/Não Marcado
-    }
-}
-
+// Função para marcar um dia específico no calendário do colaborador
 void marcarDia(Colaborador& colab, int dia, int mes, int ano, TipoMarcacao tipo) {
     if (!dataValida(dia, mes, ano)) {
-        std::cout << "ERRO: Data invalida.\n";
-        return;
-    }
-
-
-    // Apenas marca FERIAS ou FALTA, ignorando outros tipos se forem passados
-    if (tipo != TipoMarcacao::FERIAS && tipo != TipoMarcacao::FALTA) {
-        std::cout << "ERRO: Tipo de marcacao nao permitido (apenas Ferias ou Falta).\n";
-        return;
-    }
-
-    int dSemana = diaSemana(dia, mes, ano);
-    if (dSemana == 0 || dSemana == 6) { // 0=Domingo, 6=Sábado
-        std::cout << "AVISO: Nao e possivel marcar " << tipoParaString(tipo) << " ao fim de semana.\n";
+        std::cout << COR_VERMELHA << "ERRO: Data invalida. Operacao cancelada.\n" << RESET_COR;
         return;
     }
 
     int diaDoAno = dataParaDiaDoAno(dia, mes, ano);
-    if (diaDoAno != -1) {
-        // O calendário armazena a marcação no mapa usando o dia do ano como chave.
-        colab.calendario[diaDoAno] = tipo; 
-        std::cout << "Marcacao (" << tipoParaString(tipo) << ") para " << dia << "/" << mes << "/" << ano << " registada.\n";
-    }
-}
-
-void desmarcarDia(Colaborador& colab, int dia, int mes, int ano) {
-    if (!dataValida(dia, mes, ano)) {
-        std::cout << "ERRO: Data invalida.\n";
-        return;
-    }
-
-    int dSemana = diaSemana(dia, mes, ano);
-    if (dSemana == 0 || dSemana == 6) { // 0=Domingo, 6=Sábado
-        std::cout << "AVISO: Nao e possivel desmarcar ao fim de semana.\n";
-        return;
-    }
-
-    int diaDoAno = dataParaDiaDoAno(dia, mes, ano);
-    if (diaDoAno != -1) {
-        // A função erase do std::map retorna 1 se um elemento foi removido, 0 caso contrário.
-        if (colab.calendario.erase(diaDoAno)) {
-            std::cout << "Marcacao para " << dia << "/" << mes << "/" << ano << " removida.\n";
-        } else {
-            std::cout << "AVISO: Nao havia marcacao para " << dia << "/" << mes << "/" << ano << ".\n";
-        }
-    }
-}
-
-// --- Funções de Visualização ---
-
-// Determina o char ('F', 'X', ou ' ') e a cor a usar para um dia específico
-void obterMarcadorEcor(const Colaborador& colab, int diaDoAno, int diaSemAtual, char& marcador, std::string& cor) {
-    marcador = ' '; // Por defeito: Dia Livre
-    cor = RESET_COR; // Por defeito: Cor normal
+    int diaSemAtual = diaSemana(dia, mes, ano);
 
     // Verificar se é Fim de Semana
     if (diaSemAtual == 0 || diaSemAtual == 6) { // 0=Domingo, 6=Sábado
-        cor = COR_FIM_SEMANA;
-        return; // Não verificamos marcações em FDS, apenas cor
-    }
-    
-    // Verificar Marcação (apenas em dias úteis)
-    auto it = colab.calendario.find(diaDoAno);
-
-    if (it != colab.calendario.end()) {
-        // Marcação encontrada. O tipo é um TipoMarcacao::TIPO (scoped enum)
-        switch (it->second) {
-            case TipoMarcacao::FERIAS:
-                marcador = 'F';
-                cor = COR_FERIAS;
-                break;
-            case TipoMarcacao::FALTA:
-                marcador = 'X';
-                cor = COR_FALTA;
-                break;
-            default:
-                // Se for LIVRE ou FIM_SEMANA (não deveria estar no mapa)
-                break;
-        }
-    }
-}
-
-
-void visualizarCalendario(const Colaborador& colab, int mes, int ano) {
-    if (!dataValida(1, mes, ano)) { // Verificar o mês/ano (o dia 1 é usado como placeholder)
-        std::cout << "ERRO: Mes/Ano invalido.\n";
+        std::cout << COR_VERMELHA << "ERRO: Nao e possivel marcar Fins de Semana. Operacao cancelada.\n" << RESET_COR;
         return;
     }
 
-    int diasMax = diasNoMes(mes, ano);
-    // 0=Domingo, 1=Segunda, ..., 6=Sábado (para o dia 1 do mês)
-    int primeiroDiaSemana = diaSemana(1, mes, ano); 
-    // Vamos usar esta variável para saber em que coluna estamos, 0=Dom, 6=Sab
-    int colunaDiaSemana = primeiroDiaSemana; 
-
-    std::cout << "\n*** Calendario de " << colab.nome << " - " << nomeMes(mes) << "/" << ano << " ***\n";
-    std::cout << " Dom | Seg | Ter | Qua | Qui | Sex | Sab \n";
-    std::cout << "----------------------------\n";
-
-    // Espaços iniciais (preenche até ao dia em que o mês começa)
-    for (int i = 0; i < primeiroDiaSemana; ++i) {
-        std::cout << "   |"; // 3 espaços para alinhar com ' D |'
+    colab.calendario[diaDoAno] = tipo;
+    std::cout << COR_VERDE << "Dia marcado com sucesso.\n" << RESET_COR;
+}
+// Função para desmarcar um dia específico no calendário do colaborador
+void desmarcarDia(Colaborador& colab, int dia, int mes, int ano) {
+    if (!dataValida(dia, mes, ano)) {
+        std::cout << COR_VERMELHA << "ERRO: Data invalida. Operacao cancelada.\n" << RESET_COR;
+        return;
+    }
+    int diaDoAno = dataParaDiaDoAno(dia, mes, ano);
+    colab.calendario[diaDoAno] = TipoMarcacao::LIVRE;
+    std::cout << COR_VERDE << "Dia desmarcado com sucesso.\n" << RESET_COR;
+}
+// Função para visualizar o calendário mensal do colaborador
+void visualizarCalendario(const Colaborador& colab, int mes, int ano) {
+    if (mes < 1 || mes > 12) {
+        std::cout << COR_VERMELHA << "ERRO: Mes invalido. Operacao cancelada.\n" << RESET_COR;
+        return;
     }
 
-    for (int dia = 1; dia <= diasMax; ++dia) {
-        if (colunaDiaSemana == 7) { // Nova semana
-            std::cout << "\n";
-            colunaDiaSemana = 0;
-        }
+    std::cout << COR_AZUL << "\n--- Calendario de " << colab.nome << " para " 
+              << nomeMes(mes) << " de " << ano << " ---\n" << RESET_COR;
 
-        // Obter o Dia do Ano para a chave do mapa
+    int diasNoMesAtual = diasNoMes(mes, ano);
+    int primeiroDiaSemana = diaSemana(1, mes, ano); // 0=Domingo, 1=Segunda, ..., 6=Sábado
+
+    // Cabeçalho do calendário
+    std::cout << "Dom Seg Ter Qua Qui Sex Sab\n";
+    std::cout << std::string(primeiroDiaSemana * 4, ' '); // Espaços iniciais
+    for (int dia = 1; dia <= diasNoMesAtual; ++dia) {
         int diaDoAno = dataParaDiaDoAno(dia, mes, ano);
-        // Obter o dia da semana atual (0-6)
         int diaSemAtual = diaSemana(dia, mes, ano);
-        
-        char marcador_marcacao;
-        std::string cor_dia;
-        
-        // Determinar o marcador e a cor (com base na refatoração)
-        obterMarcadorEcor(colab, diaDoAno, diaSemAtual, marcador_marcacao, cor_dia);
-
-        // --- Impressão ---
-        std::cout << cor_dia; // Define a cor para o próximo dia
-        
-        // Impressão do dia (usando std::setw(2) para alinhamento)
-        std::cout << std::setw(2) << dia;
-        
-        // Imprime o marcador real (F, X ou espaço)
-        std::cout << marcador_marcacao;
-        std::cout << RESET_COR; // Reseta a cor após imprimir o dia
-        
-        // Imprime a barra de separação
-        std::cout << "|";
-        
-        colunaDiaSemana++;
+        char marcador = ' ';
+        std::string cor;
+        obterMarcadorEcor(colab, diaDoAno, diaSemAtual, marcador, cor);
+        std::cout << cor << std::setw(2) << dia << marcador << " " << RESET_COR;
+        if ((diaSemAtual + dia) % 7 == 0) {
+            std::cout << "\n"; // Nova linha ao fim da semana
+        }
     }
-    
-    std::cout << "\n---------------------------\n";
+    std::cout << "\n";
+}
+// Função para contar ausências anuais
+void contarAusencias(const Colaborador& colab, int ano, int& totalFerias, int& totalFaltas) {
+    for (const auto& entrada : colab.calendario) {
+        int diaDoAno = entrada.first;
+        TipoMarcacao tipo = entrada.second;
+        // Converter diaDoAno para mês e ano
+        int mesAtual = 1;
+        int anoAtual = ano;
+        int diaAcumulado = 0;
+        while (mesAtual <= 12) {
+            int diasNoMesAtual = diasNoMes(mesAtual, anoAtual);
+            if (diaDoAno <= diaAcumulado + diasNoMesAtual) {
+                break;
+            }
+            diaAcumulado += diasNoMesAtual;
+            mesAtual++;
+            if (mesAtual > 12) {
+                mesAtual = 1;
+                anoAtual++;
+            }
+        }
+        if (anoAtual == ano) {
+            if (tipo == TipoMarcacao::FERIAS) {
+                totalFerias++;
+            } else if (tipo == TipoMarcacao::FALTA) {
+                totalFaltas++;
+            }
+        }
+    }
+}
+// Função para contar ausências mensais
+void contarAusenciasMensal(const Colaborador& colab, int mes, int ano, int& totalFerias, int& totalFaltas) {
+    for (const auto& entrada : colab.calendario) {
+        int diaDoAno = entrada.first;
+        TipoMarcacao tipo = entrada.second;
+        // Converter diaDoAno para mês e ano
+        int mesAtual = 1;
+        int anoAtual = ano;
+        int diaAcumulado = 0;
+        while (mesAtual <= 12) {
+            int diasNoMesAtual = diasNoMes(mesAtual, anoAtual);
+            if (diaDoAno <= diaAcumulado + diasNoMesAtual) {
+                break;
+            }
+            diaAcumulado += diasNoMesAtual;
+            mesAtual++;
+            if (mesAtual > 12) {
+                mesAtual = 1;
+                anoAtual++;
+            }
+        }
+        if (anoAtual == ano && mesAtual == mes) {
+            if (tipo == TipoMarcacao::FERIAS) {
+                totalFerias++;
+            } else if (tipo == TipoMarcacao::FALTA) {
+                totalFaltas++;
+            }
+        }
+    }
+}
+// Função para verificar conflito de férias no departamento
+bool verificarConflitoFerias(const Colaborador& colab, int dia, int mes, int ano) {
+    int diaDoAno = dataParaDiaDoAno(dia, mes, ano);
+    // Aqui você precisaria de acesso à lista de colaboradores do mesmo departamento
+    // Esta função atualmente não tem esse acesso, então retornamos false por padrão
+    return false; // Implementação de conflito depende do contexto externo
+}
+// Função auxiliar para obter marcador e cor para o calendário
 
+void obterMarcadorEcor(const Colaborador& colab, int diaDoAno, int diaSemAtual, char& marcador, std::string& cor) {
+
+    auto it = colab.calendario.find(diaDoAno);
+
+    if (it != colab.calendario.end()) {
+
+        switch (it->second) {
+            case TipoMarcacao::FERIAS:
+                marcador = 'F';
+                cor = COR_VERDE;
+                break;
+            case TipoMarcacao::FALTA:
+                marcador = 'X';
+                cor = COR_ROXO;
+                break;
+            case TipoMarcacao::LIVRE:
+                marcador = ' ';
+                cor = "";
+                break;
+            default:
+                marcador = ' ';
+                cor = "";
+                break;
+        }
+    } else {
+        // Verificar se é fim de semana
+        if (diaSemAtual == 0 || diaSemAtual == 6) {
+            marcador = 'S';
+            cor = COR_AMARELA;
+        } else {
+            marcador = ' ';
+            cor = "";
+        }
+    }
 }

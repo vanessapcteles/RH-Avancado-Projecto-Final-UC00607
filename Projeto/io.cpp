@@ -1,128 +1,113 @@
-
-#include "colaborador.h" // Já inclui calendario.h
-#include "calendario.cpp"  
-#include "io.h"
-#include "reports.h"
-#include <string>
-#include <vector>
+#include "io.h" // Inclui as declarações (assinaturas)
+#include "colaborador.h"
+#include "calendario.h"
 #include <fstream>
 #include <sstream>
-#include <algorithm>
-#include <cctype>
+#include <vector>
 #include <iostream>
+#include <cctype>
+#include <string>
+#include <map>
 
-const std::string COR_VERDE = "\033[32m"; // Verde (para Sucesso/Confirmações)
-const std::string COR_AMARELA = "\033[33m";       // Amarelo (Serve para avisos)
-const std::string COR_VERMELHA = "\033[31m";    // Vermelho (serve para erros)
-const std::string RESET_COR = "\033[0m";       // Reseta cor/estilo para o padrão
+// Constante para a chave da Cifra de César
+const int CHAVE_CESAR = 3; 
 
-// --- Funções de Cifra ---
+// --- Implementação das Funções ---
 
-// Função simples de encriptação (Cifra de César)
+// Implementação da Cifra de César
 std::string encriptar(const std::string& texto, int chave) {
     std::string resultado = texto;
-    
-    for (size_t i = 0; i < texto.size(); ++i) {
-        char c = texto[i];
-
-        if (std::isalpha(c)) { // apenas letras
+    for (char& c : resultado) {
+        if (std::isalpha(c)) { 
             char base = std::isupper(c) ? 'A' : 'a';
-            resultado[i] = char((c - base + chave) % 26 + base);
-        } else {
-            resultado[i] = c; // mantém espaços e pontuação
+            c = char((c - base + chave) % 26 + base);
         }
     }
     return resultado;
 }
 
-// Função de desencriptação (reverte o processo)
-std::string desencriptar(const std::string &texto, int chave) {
-    return encriptar(texto, 26 - (chave % 26)); // desloca no sentido inverso
+std::string desencriptar(const std::string& texto, int chave) {
+    std::string resultado = texto;
+    for (char& c : resultado) {
+        if (std::isalpha(c)) { 
+            char base = std::isupper(c) ? 'A' : 'a';
+            c = char((c - base - chave + 26) % 26 + base);
+        }
+    }
+    return resultado;
 }
-// --- Funções de Persistência ---
 
-// Formato de gravação por linha: NOME_CIFRADO|DiaDoAno:Tipo,DiaDoAno:Tipo,...
+// ... Coloque aqui a implementação completa de encriptar ...
+
+std::string desencriptar(const std::string &texto, int chave) {
+    return encriptar(texto, 26 - (chave % 26)); 
+}
+
+// ... Coloque aqui a implementação completa de tipoParaString ...
+std::string tipoParaString(TipoMarcacao tipo) {
+    switch (tipo) {
+        case TipoMarcacao::FERIAS: return "F";
+        case TipoMarcacao::FALTA: return "X";
+        default: return " ";
+    }
+    return " ";
+}
+
+// ... Coloque aqui a implementação completa de stringParaTipo ...
+TipoMarcacao stringParaTipo(const std::string& str) {
+    if (str == "F") return TipoMarcacao::FERIAS;
+    if (str == "X") return TipoMarcacao::FALTA;
+    return TipoMarcacao::LIVRE;
+}
+
+// ... Coloque aqui a implementação completa de guardarDados ...
 void guardarDados(const std::vector<Colaborador>& lista, const std::string& nomeFicheiro) {
-    std::ofstream ficheiro(nomeFicheiro); 
+    // ... TODO o corpo da função aqui ...
+    std::ofstream ficheiro(nomeFicheiro);
     if (!ficheiro.is_open()) {
-        std::cerr << COR_VERMELHA << "ERRO: Nao foi possivel abrir o ficheiro '" << nomeFicheiro << "' para escrita.\n" << RESET_COR;
+        std::cerr << "ERRO: Nao foi possivel abrir o ficheiro " << nomeFicheiro << " para escrita.\n";
         return;
     }
+    // ... resto do código ...
+}
 
-    for (const auto& colab : lista) {
-        // Grava o Nome Cifrado
-        ficheiro << encriptar(colab.nome, CHAVE_CESAR) << "|";
-
-        std::string calendario_str;
-        for (const auto& par : colab.calendario) {
-            // par.first = diaDoAno (int); par.second = TipoMarcacao (enum)
-            char tipo_char = (par.second == TipoMarcacao::FERIAS) ? 'F' : 'X';
-            calendario_str += std::to_string(par.first) + ":" + std::string(1, tipo_char) + ",";
-        }
-        if (!calendario_str.empty()) {
-            // Remove a última vírgula
-            calendario_str.pop_back();
-        }
-        ficheiro << calendario_str << "\n";
+// ... Coloque aqui a implementação completa de getNextToken ...
+std::string getNextToken(std::stringstream& ss, char delimitador) {
+    std::string token;
+    if (std::getline(ss, token, delimitador)) {
+        return token;
     }
-    ficheiro.close();
-    std::cout << COR_VERDE << "Dados guardados em '" << nomeFicheiro << "' (" << lista.size() << " colaboradores).\n" << RESET_COR;
+    return "";
 }
 
 void carregarDados(std::vector<Colaborador>& lista, const std::string& nomeFicheiro) {
-    std::ifstream ficheiro(nomeFicheiro); 
+    lista.clear(); // Garantir que a lista está vazia antes de carregar novos dados
+    std::ifstream ficheiro(nomeFicheiro);
     if (!ficheiro.is_open()) {
-        std::cout << COR_AMARELA << "AVISO: Ficheiro de dados '" << nomeFicheiro << "' nao encontrado. Iniciando sistema vazio.\n" << RESET_COR;
+        std::cerr << "AVISO: Nao foi possivel abrir o ficheiro " << nomeFicheiro << " para leitura. Pode ser que o ficheiro nao exista ainda.\n";
         return;
     }
 
     std::string linha;
     while (std::getline(ficheiro, linha)) {
-        if (linha.empty()) continue;
-
-        Colaborador novoColab;
+        
         std::stringstream ss(linha);
-        std::string parte;
-
-        // Ler Nome Cifrado e dados do Calendário (separados por '|')
-        if (std::getline(ss, parte, '|')) {
-            novoColab.nome = desencriptar(parte, CHAVE_CESAR);
-        } else {
-            // Se não houver '|', assume que a linha é apenas o nome cifrado (sem calendário)
-            novoColab.nome = desencriptar(linha, CHAVE_CESAR);
-            lista.push_back(novoColab);
-            continue;
+        std::string nome = getNextToken(ss, ';');
+        std::string departamento = getNextToken(ss, ';');
+        int id = std::stoi(getNextToken(ss, ';'));
+        Colaborador colab;
+        colab.nome = desencriptar(nome, CHAVE_CESAR);
+        colab.departamento = desencriptar(departamento, CHAVE_CESAR);
+        colab.id = id;
+        std::string calendarioStr = getNextToken(ss, ';');
+        std::stringstream ssCalendario(calendarioStr);
+        std::string marcacao;
+        int dia = 0;
+        while (std::getline(ssCalendario, marcacao, ',')) {
+            colab.calendario[dia++] = stringParaTipo(marcacao);
         }
-
-        // Ler e processar o Calendário (string de marcações)
-        std::string calendario_str;
-        if (std::getline(ss, calendario_str)) {
-            std::stringstream ss_cal(calendario_str);
-            std::string marcacao;
-            while (std::getline(ss_cal, marcacao, ',')) {
-                if (marcacao.empty()) continue;
-
-                size_t pos_dois_pontos = marcacao.find(':');
-                if (pos_dois_pontos != std::string::npos) {
-                    try {
-                        int diaDoAno = std::stoi(marcacao.substr(0, pos_dois_pontos));
-                        char tipo_char = marcacao[pos_dois_pontos + 1];
-
-                        TipoMarcacao tipo = TipoMarcacao::LIVRE;
-                        if (tipo_char == 'F') tipo = TipoMarcacao::FERIAS;
-                        else if (tipo_char == 'X') tipo = TipoMarcacao::FALTA;
-
-                        if (tipo != TipoMarcacao::LIVRE) {
-                            novoColab.calendario[diaDoAno] = tipo;
-                        }
-                    } catch (const std::exception& e) {
-                        std::cerr << COR_VERMELHA << "ERRO de parsing em linha: " << linha << std::endl << RESET_COR;
-                    }
-                }
-            }
-        }
-        lista.push_back(novoColab);
+        lista.push_back(colab);
     }
-    ficheiro.close();
-    std::cout << COR_VERDE << "Dados de '" << nomeFicheiro << "' carregados com sucesso (" << lista.size() << " colaboradores).\n" << RESET_COR;
 }
+
+

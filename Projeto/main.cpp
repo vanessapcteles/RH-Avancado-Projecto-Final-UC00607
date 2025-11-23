@@ -4,6 +4,7 @@
 #include "reports.h" // Inclui os novos relatórios
 #include "calendario.cpp"
 #include "io.cpp"
+#include "cores.h"
 #include <limits>
 #include <cstdlib>
 #include <iostream>
@@ -12,12 +13,22 @@
 #include <algorithm>
 
 // Cores (Definições globais)
-const std::string COR_AMARELA = "\033[33m";      // Avisos/Fim de Semana
-const std::string COR_VERMELHA = "\033[31m";    // Erros
-const std::string COR_VERDE = "\033[32m";      // Sucesso/Férias
+
 const std::string COR_AZUL = "\033[34m";        // Títulos
 const std::string COR_ROXO = "\033[35m";        // Faltas
-const std::string RESET_COR = "\033[0m";       // Reset
+const std::string COR_VERDE = "\033[32m";       // Sucesso/Confirmações
+const std::string COR_VERMELHA = "\033[31m";    // Erros
+const std::string COR_AMARELA = "\033[33m";     // Avisos
+const std::string RESET_COR = "\033[0m";        // Reset das cores para terminal
+// Função para limpar a consola (dependente do SO)
+void limparConsola();
+
+// Apresenta o menu principal 
+void mostrarMenu();
+
+// Função de ligação entre o menu e a marcação
+void menuGerirMarcacoes(std::vector<Colaborador>& lista);
+void menuVisualizarCalendario(const std::vector<Colaborador>& lista);
 
 void limparConsola() {
 #ifdef _WIN32
