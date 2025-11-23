@@ -1,6 +1,6 @@
 
 #include "colaborador.h" // Já inclui calendario.h
-#include "calendario.h"
+#include "calendario.cpp"  
 #include "io.h"
 #include "reports.h"
 #include <string>
@@ -14,14 +14,14 @@
 const std::string COR_VERDE = "\033[32m"; // Verde (para Sucesso/Confirmações)
 const std::string COR_AMARELA = "\033[33m";       // Amarelo (Serve para avisos)
 const std::string COR_VERMELHA = "\033[31m";    // Vermelho (serve para erros)
-const std::string RESET_COR = "\033[0m";    // Reseta cor/estilo para o padrão
+const std::string RESET_COR = "\033[0m";       // Reseta cor/estilo para o padrão
 
 // --- Funções de Cifra ---
 
 // Função simples de encriptação (Cifra de César)
 std::string encriptar(const std::string& texto, int chave) {
     std::string resultado = texto;
-
+    
     for (size_t i = 0; i < texto.size(); ++i) {
         char c = texto[i];
 
@@ -43,20 +43,20 @@ std::string desencriptar(const std::string &texto, int chave) {
 
 // Formato de gravação por linha: NOME_CIFRADO|DiaDoAno:Tipo,DiaDoAno:Tipo,...
 void guardarDados(const std::vector<Colaborador>& lista, const std::string& nomeFicheiro) {
-    std::ofstream ficheiro(nomeFicheiro);
+    std::ofstream ficheiro(nomeFicheiro); 
     if (!ficheiro.is_open()) {
         std::cerr << COR_VERMELHA << "ERRO: Nao foi possivel abrir o ficheiro '" << nomeFicheiro << "' para escrita.\n" << RESET_COR;
         return;
     }
 
     for (const auto& colab : lista) {
-        // 1. Grava o Nome Cifrado
+        // Grava o Nome Cifrado
         ficheiro << encriptar(colab.nome, CHAVE_CESAR) << "|";
 
         std::string calendario_str;
         for (const auto& par : colab.calendario) {
             // par.first = diaDoAno (int); par.second = TipoMarcacao (enum)
-            char tipo_char = (par.second == FERIAS) ? 'F' : 'X';
+            char tipo_char = (par.second == TipoMarcacao::FERIAS) ? 'F' : 'X';
             calendario_str += std::to_string(par.first) + ":" + std::string(1, tipo_char) + ",";
         }
         if (!calendario_str.empty()) {
@@ -70,7 +70,7 @@ void guardarDados(const std::vector<Colaborador>& lista, const std::string& nome
 }
 
 void carregarDados(std::vector<Colaborador>& lista, const std::string& nomeFicheiro) {
-    std::ifstream ficheiro(nomeFicheiro);
+    std::ifstream ficheiro(nomeFicheiro); 
     if (!ficheiro.is_open()) {
         std::cout << COR_AMARELA << "AVISO: Ficheiro de dados '" << nomeFicheiro << "' nao encontrado. Iniciando sistema vazio.\n" << RESET_COR;
         return;
@@ -108,11 +108,11 @@ void carregarDados(std::vector<Colaborador>& lista, const std::string& nomeFiche
                         int diaDoAno = std::stoi(marcacao.substr(0, pos_dois_pontos));
                         char tipo_char = marcacao[pos_dois_pontos + 1];
 
-                        TipoMarcacao tipo = LIVRE;
-                        if (tipo_char == 'F') tipo = FERIAS;
-                        else if (tipo_char == 'X') tipo = FALTA;
+                        TipoMarcacao tipo = TipoMarcacao::LIVRE;
+                        if (tipo_char == 'F') tipo = TipoMarcacao::FERIAS;
+                        else if (tipo_char == 'X') tipo = TipoMarcacao::FALTA;
 
-                        if (tipo != LIVRE) {
+                        if (tipo != TipoMarcacao::LIVRE) {
                             novoColab.calendario[diaDoAno] = tipo;
                         }
                     } catch (const std::exception& e) {

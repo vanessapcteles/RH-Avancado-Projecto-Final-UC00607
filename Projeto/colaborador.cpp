@@ -48,7 +48,7 @@ void adicionarColaborador(std::vector<Colaborador>& lista) {
     std::string nome, departamento;
     std::cout << COR_AZUL << "\n--- Adicionar Colaborador ---\n" << RESET_COR;
 
-    // 1. Nome
+    // Nome
     std::cout << "Nome do novo colaborador: ";
     std::getline(std::cin >> std::ws, nome);
 
@@ -63,7 +63,7 @@ void adicionarColaborador(std::vector<Colaborador>& lista) {
         }
     }
 
-    // 2. Departamento (Requisito 3)
+    // Departamento
     std::cout << "Departamento (Ex: Vendas, RH, IT): ";
     std::getline(std::cin >> std::ws, departamento);
 
@@ -93,7 +93,7 @@ void listarColaboradores(const std::vector<Colaborador>& lista) {
     std::cout << "----------------------------------------------------\n";
 }
 
-// Encontra o índice (por nome ou ID) - Requisito 2
+// Encontra o índice (por nome ou ID) do colaborador na lista
 int encontrarColaborador(const std::vector<Colaborador>& lista, const std::string& query, bool isID) {
     if (isID) {
         try {
@@ -107,7 +107,7 @@ int encontrarColaborador(const std::vector<Colaborador>& lista, const std::strin
             // Ignora se a conversão falhar, tenta procurar por nome
         }
     }
-    // Busca por nome (parcial e insensível a maiúsculas/minúsculas)
+    // Procurar por nome (parcial e insensível a maiúsculas/minúsculas)
     std::string query_lower = query;
     std::transform(query_lower.begin(), query_lower.end(), query_lower.begin(), ::tolower);
 
@@ -122,8 +122,8 @@ int encontrarColaborador(const std::vector<Colaborador>& lista, const std::strin
     return -1; // Não encontrado
 }
 
-// Novo: Procura e mostra dados (Requisito 2)
-void buscaColaborador(const std::vector<Colaborador>& lista) {
+// Procura e mostra dados do colaborador
+void procurarColaborador(const std::vector<Colaborador>& lista) {
     if (lista.empty()) {
         std::cout << COR_AMARELA << "AVISO: Nao ha colaboradores para buscar.\n" << RESET_COR;
         return;
@@ -400,7 +400,7 @@ void gerirNotas(Colaborador& colab) {
     } while (op != 0);
 }
 
-// Novo: Menu de Gestão do Colaborador (Formações/Notas) - Ligação principal do main.cpp
+// Menu de Gestão do Colaborador (Formações/Notas) - Ligação principal do main.cpp
 void menuGestaoColaborador(std::vector<Colaborador>& lista) {
     if (lista.empty()) {
         std::cout << COR_AMARELA << "AVISO: Nao ha colaboradores para gerir.\n" << RESET_COR;

@@ -1,8 +1,11 @@
 #include "calendario.h"
 #include "colaborador.h"
+#include "reports.h"
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <map>
+#include <array>
 
 // Cores para terminal (Códigos ANSI)
 const std::string RESET_COR = "\033[0m"; // Reseta cor/estilo para o padrão
@@ -13,42 +16,51 @@ const std::string COR_FIM_SEMANA = "\033[90m"; // Cinzento Claro (para Fins de S
 // Função para calcular o dia da semana
 // Usa a congruência de Zeller para determinar o dia da semana de qualquer data.
 // Retorna: 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
-int diaSemana(int diaA, int mesA, int anoA) {
-    if(mesA < 3) { mesA += 12; anoA--; }
-    int k = anoA % 100;
-    int j = anoA / 100;
-    // Congruência de Zeller
-    int h = (diaA + 13*(mesA+1)/5 + k + k/4 + j/4 + 5*j) % 7;
-    // Ajusta o resultado para 0=Domingo, 6=Sábado
-    int d = (h + 6) % 7; 
-    return d;
+int diaSemana(int dia, int mes, int ano) {
+    if (mes < 3) {
+        mes += 12;
+        ano -= 1;
+    }
+    int k = ano % 100;
+    int j = ano / 100;
+    // h é o valor de Zeller: 0 = Sábado, 1 = Domingo, 2 = Segunda, ..., 6 = Sexta
+    int h = (dia + (13 * (mes + 1)) / 5 + k + (k / 4) + (j / 4) + (5 * j)) % 7;
+    if (h < 0) h += 7;
+    // Converter para o formato desejado: 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+    int resultado = (h + 6) % 7;
+    return resultado;
 }
 
 // Função para calcular o número de dias num mês
 // Esta função trata corretamente anos bissextos.
 int diasNoMes(int mes, int ano) {
-    switch(mes){
-        case 1: case 3: case 5: case 7: case 8: case 10: case 12: return 31;
-        case 4: case 6: case 9: case 11: return 30;
-        case 2: // Fevereiro
-            // Regra do ano bissexto: divisível por 4, mas não por 100, ou divisível por 400
-            return ((ano % 4 == 0 && ano % 100 != 0) || (ano % 400 == 0)) ? 29 : 28;
-        default: 
-            // Em caso de mês inválido (não deveria acontecer se a dataValida for usada)
+    switch (mes) {
+        case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+            return 31;
+        case 4: case 6: case 9: case 11:
             return 30;
-    }
+        case 2:
+            // Verifica se é ano bissexto
+            if ((ano % 4 == 0 && ano % 100 != 0) || (ano % 400 == 0)) {
+                return 29;
+            } else {
+                return 28;
+            }
+        default:
+            return 0; // Mês inválido
+        }
+        return 0; // Mês inválido
 }
-
-// Função auxiliar para obter o nome do mês
 std::string nomeMes(int mes){
-    const std::string meses[] = {"Janeiro","Fevereiro","Marco","Abril","Maio","Junho",
-                                 "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"};
+    static const std::array<std::string, 12> meses = {{"Janeiro","Fevereiro","Marco","Abril","Maio","Junho",
+                                                      "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"}};
     // Se o mês for válido (1 a 12), retorna o nome. Caso contrário, retorna string vazia.
     if (mes >= 1 && mes <= 12) {
         return meses[mes-1];
     }
-    return "";
+    return std::string();
 }
+
 
 // --- Funções de Validação e Conversão ---
 
@@ -82,11 +94,9 @@ int dataParaDiaDoAno(int dia, int mes, int ano) {
 // Função auxiliar para obter o nome do TipoMarcacao para feedback
 std::string tipoParaString(TipoMarcacao tipo) {
     switch (tipo) {
-        case TipoMarcacao::FERIAS: return "Ferias";
-        case TipoMarcacao::FALTA: return "Falta";
-        case TipoMarcacao::LIVRE: return "Livre";
-        case TipoMarcacao::FIM_SEMANA: return "Fim de Semana";
-        default: return "Desconhecido";
+        case TipoMarcacao::FERIAS: return "F";
+        case TipoMarcacao::FALTA: return "X";
+        default: return " "; // Desconhecido/Não Marcado
     }
 }
 
@@ -95,6 +105,7 @@ void marcarDia(Colaborador& colab, int dia, int mes, int ano, TipoMarcacao tipo)
         std::cout << "ERRO: Data invalida.\n";
         return;
     }
+
 
     // Apenas marca FERIAS ou FALTA, ignorando outros tipos se forem passados
     if (tipo != TipoMarcacao::FERIAS && tipo != TipoMarcacao::FALTA) {
@@ -121,6 +132,13 @@ void desmarcarDia(Colaborador& colab, int dia, int mes, int ano) {
         std::cout << "ERRO: Data invalida.\n";
         return;
     }
+
+    int dSemana = diaSemana(dia, mes, ano);
+    if (dSemana == 0 || dSemana == 6) { // 0=Domingo, 6=Sábado
+        std::cout << "AVISO: Nao e possivel desmarcar ao fim de semana.\n";
+        return;
+    }
+
     int diaDoAno = dataParaDiaDoAno(dia, mes, ano);
     if (diaDoAno != -1) {
         // A função erase do std::map retorna 1 se um elemento foi removido, 0 caso contrário.
@@ -139,13 +157,13 @@ void obterMarcadorEcor(const Colaborador& colab, int diaDoAno, int diaSemAtual, 
     marcador = ' '; // Por defeito: Dia Livre
     cor = RESET_COR; // Por defeito: Cor normal
 
-    // 1. Verificar se é Fim de Semana
+    // Verificar se é Fim de Semana
     if (diaSemAtual == 0 || diaSemAtual == 6) { // 0=Domingo, 6=Sábado
         cor = COR_FIM_SEMANA;
         return; // Não verificamos marcações em FDS, apenas cor
     }
     
-    // 2. Verificar Marcação (apenas em dias úteis)
+    // Verificar Marcação (apenas em dias úteis)
     auto it = colab.calendario.find(diaDoAno);
 
     if (it != colab.calendario.end()) {
@@ -194,15 +212,15 @@ void visualizarCalendario(const Colaborador& colab, int mes, int ano) {
             colunaDiaSemana = 0;
         }
 
-        // 1. Obter o Dia do Ano para a chave do mapa
+        // Obter o Dia do Ano para a chave do mapa
         int diaDoAno = dataParaDiaDoAno(dia, mes, ano);
-        // 2. Obter o dia da semana atual (0-6)
+        // Obter o dia da semana atual (0-6)
         int diaSemAtual = diaSemana(dia, mes, ano);
         
         char marcador_marcacao;
         std::string cor_dia;
         
-        // 3. Determinar o marcador e a cor (com base na refatoração)
+        // Determinar o marcador e a cor (com base na refatoração)
         obterMarcadorEcor(colab, diaDoAno, diaSemAtual, marcador_marcacao, cor_dia);
 
         // --- Impressão ---
@@ -222,4 +240,5 @@ void visualizarCalendario(const Colaborador& colab, int mes, int ano) {
     }
     
     std::cout << "\n---------------------------\n";
+
 }

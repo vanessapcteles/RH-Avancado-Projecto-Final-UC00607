@@ -2,6 +2,8 @@
 #include "calendario.h"
 #include "io.h"
 #include "reports.h" // Inclui os novos relatórios
+#include "calendario.cpp"
+#include "io.cpp"
 #include <limits>
 #include <cstdlib>
 #include <iostream>
@@ -12,10 +14,10 @@
 // Cores (Definições globais)
 const std::string COR_AMARELA = "\033[33m";      // Avisos/Fim de Semana
 const std::string COR_VERMELHA = "\033[31m";    // Erros
-const std::string COR_VERDE = "\033[32m";       // Sucesso/Férias
+const std::string COR_VERDE = "\033[32m";      // Sucesso/Férias
 const std::string COR_AZUL = "\033[34m";        // Títulos
 const std::string COR_ROXO = "\033[35m";        // Faltas
-const std::string RESET_COR = "\033[0m";        // Reset
+const std::string RESET_COR = "\033[0m";       // Reset
 
 void limparConsola() {
 #ifdef _WIN32
@@ -99,11 +101,13 @@ void menuGerirMarcacoes(std::vector<Colaborador>& lista) {
     if (op == 3) {
         desmarcarDia(colab, dia, mes, ano);
     } else if (op == 1 || op == 2) {
-        TipoMarcacao tipoMarcacao = (op == 1) ? FERIAS : FALTA;
+        TipoMarcacao tipoMarcacao = (op == 1) 
+            ? TipoMarcacao::FERIAS 
+            : TipoMarcacao::FALTA;
 
-        // NOVO: Verificar Conflito de Férias 
-        if (tipoMarcacao == FERIAS) {
-            bool conflito = verificarConflitoFerias(lista, colab, dia, mes, ano);
+        // Verificar Conflito de Férias 
+        if (tipoMarcacao == TipoMarcacao::FERIAS) {
+            bool conflito = verificarConflitoFerias(colab, dia, mes, ano);
             if (conflito) {
                 // Continua a marcar mesmo com conflito (conforme o requisito)
                 std::cout << COR_AMARELA << "A marcacao vai prosseguir, apesar do conflito no departamento.\n" << RESET_COR;
@@ -193,7 +197,7 @@ int main() {
                 listarColaboradores(listaColaboradores);
                 break;
             case 5: // Buscar Colaborador
-                buscaColaborador(listaColaboradores);
+                procurarColaborador(listaColaboradores);
                 break;
             case 6: // Gerir Formações e Notas
                 menuGestaoColaborador(listaColaboradores);

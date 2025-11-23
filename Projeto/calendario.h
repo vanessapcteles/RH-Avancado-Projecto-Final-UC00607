@@ -6,13 +6,14 @@
 #include <iostream>
 #include <iomanip>
 
-// --- Enumeração para Tipo de Marcação (Usando enum class para tipagem forte) ---
+// --- Enumeração para Tipo de Marcação ---
 // Define os tipos de marcação de um dia, evitando colisões de nomes
 enum class TipoMarcacao {
     LIVRE,       //' ' - Dia normal de trabalho
     FERIAS,     // 'F' - Dia de férias
     FALTA,      // 'X' - Dia de falta
-    FIM_SEMANA  // 'S' - Fim de semana (normalmente não é marcável pelo utilizador)
+    FIM_SEMANA, // 'S' - Fim de semana (normalmente não é marcável pelo utilizador)
+    NAO_MARCADO // 'U' - Não marcado (usado internamente)
 };
 
 // Declaração antecipada da estrutura Colaborador para uso nas funções
@@ -48,5 +49,17 @@ void desmarcarDia(Colaborador& colab, int dia, int mes, int ano);
 
 // Visualiza o calendário mensal detalhado do colaborador
 void visualizarCalendario(const Colaborador& colab, int mes, int ano);
+
+// Conta o total de ausências (Férias e Faltas) num determinado ano
+void contarAusencias(const Colaborador& colab, int ano, int& totalFerias, int& totalFaltas);
+
+// Conta o total de ausências num determinado mês e ano
+void contarAusenciasMes(const Colaborador& colab, int mes, int ano, int& totalFerias, int& totalFaltas);
+
+// Conta o total de ausências num determinado mês e ano
+void contarAusenciasMensal(const Colaborador& colab, int mes, int ano, int& totalFerias, int& totalFaltas);
+
+// Verificar Comflito de Férias
+bool verificarConflitoFerias(const Colaborador& colab, int dia, int mes, int ano);
 
 #endif // CALENDARIO_H

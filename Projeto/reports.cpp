@@ -74,7 +74,7 @@ void relatorioMensal(const std::vector<Colaborador>& lista) {
     if (!(std::cin >> ano)) { std::cin.clear(); std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); return; }
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    if (!isDataValida(1, mes, ano)) {
+    if(dataValida(1, mes, ano) == false ) {
         std::cout << COR_VERMELHA << "ERRO: Mes ou Ano invalidos.\n" << RESET_COR;
         return;
     }
@@ -204,16 +204,24 @@ void exportarDados(const std::vector<Colaborador>& lista) {
             int ano = chave / 10000;
             int mes = (chave % 10000) / 100;
             int dia = chave % 100;
+            TipoMarcacao tipo = TipoMarcacao::LIVRE;
+            // Converter int de volta para TipoMarcacao
+            char tipo_char = ' ';
+            if (par.second == TipoMarcacao::FERIAS) tipo_char = 'F';
+            else if (par.second == TipoMarcacao::FALTA) tipo_char = 'X';
+            if (tipo_char != ' ') {
+                tipo = stringParaTipo(std::string(1, tipo_char));
+            }
 
-            std::string tipo = (par.second == FERIAS) ? "FERIAS" : "FALTA";
 
+            std::string tipoMarcacao = (par.second == TipoMarcacao::FERIAS) ? "F" : "X";
             ficheiro << colab.id << ","
                      << colab.nome << ","
                      << colab.departamento << ","
                      << std::setw(2) << std::setfill('0') << dia << "/"
-                     << std::setw(2) << std::setfill('0') << mes << "/"
-                     << ano << ","
-                     << tipo << "\n";
+                        << std::setw(2) << std::setfill('0') << mes << "/"
+                        << ano << ","
+                        << tipoMarcacao << "\n";
         }
         ficheiro.close();
         std::cout << COR_VERDE << "Calendario de " << colab.nome << " exportado para " << nomeFicheiro << "\n" << RESET_COR;

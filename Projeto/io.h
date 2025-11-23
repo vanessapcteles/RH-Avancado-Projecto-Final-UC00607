@@ -1,27 +1,41 @@
 
 #include "colaborador.h" // Necessário para aceder à estrutura Colaborador
 #include "calendario.h" // Necessário para TipoMarcacao
+#include "reports.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <algorithm>
 #include <map>
 
+const int CHAVE_CESAR = 3; // Chave de encriptação pedagógica
+
+// --- Funções de Cifra Fornecidas ---
+
+std::string encriptar(const std::string &texto, int chave);
+std::string desencriptar(const std::string &texto, int chave);
+
+// --- Funções de Persistência ---
 // Implementação da Cifra de César
-std::string encriptar(const std::string &texto, int chave) {
+std::string encriptar(const std::string& texto, int chave) {
     std::string resultado = texto;
-    for (char &c : resultado) {
-        if (std::isalpha(c)) {
+
+    for (size_t i = 0; i < texto.size(); ++i) {
+        char c = texto[i];
+
+        if (std::isalpha(c)) { // apenas letras
             char base = std::isupper(c) ? 'A' : 'a';
-            c = (char)(base + (c - base + chave) % 26);
+            resultado[i] = char((c - base + chave) % 26 + base);
+        } else {
+            resultado[i] = c; // mantém espaços e pontuação
         }
     }
     return resultado;
+
 }
 
 std::string desencriptar(const std::string &texto, int chave) {
-    // A desencriptação é o mesmo que encriptar com o inverso da chave (26 - chave)
-    return encriptar(texto, 26 - (chave % 26));
+    return encriptar(texto, 26 - (chave % 26)); // desloca no sentido inverso
 }
 
 // --- Funções Auxiliares de Serialização/Desserialização ---
@@ -30,26 +44,27 @@ std::string desencriptar(const std::string &texto, int chave) {
 std::string tipoParaString(TipoMarcacao tipo) {
     switch (tipo) {
         case TipoMarcacao::FERIAS: return "F";
-        case TipoMarcacao::FALTA: return "L";
-        default: return "U"; // Desconhecido/Não Marcado
+        case TipoMarcacao::FALTA: return "X";
+        default: return " "; // Desconhecido/Não Marcado
     }
+    return " "; // Desconhecido/Não Marcado
 }
 
 // Função auxiliar para converter string para TipoMarcacao (ao carregar)
 TipoMarcacao stringParaTipo(const std::string& str) {
     if (str == "F") return TipoMarcacao::FERIAS;
-    if (str == "L") return TipoMarcacao::FALTA;
-    return TipoMarcacao::NAO_MARCADO;
+    if (str == "X") return TipoMarcacao::FALTA;
+    return TipoMarcacao::LIVRE; // Padrão
 }
 
 // Guarda os dados dos colaboradores no ficheiro (CSV Encriptado)
 void guardarDados(const std::vector<Colaborador>& lista, const std::string& nomeFicheiro) {
     std::ofstream ficheiro(nomeFicheiro);
     if (!ficheiro.is_open()) {
-        std::cerr << "Erro: Nao foi possivel abrir o ficheiro " << nomeFicheiro << " para escrita." << std::endl;
+        std::cerr << "ERRO: Nao foi possivel abrir o ficheiro " << nomeFicheiro << " para escrita.\n";
         return;
     }
-
+    
     for (const auto& colab : lista) {
         std::stringstream ss;
         // Dados base
@@ -84,20 +99,23 @@ void guardarDados(const std::vector<Colaborador>& lista, const std::string& nome
 }
 
 // Função auxiliar para ler um token até ao próximo delimitador (ou fim da string)
-std::string getNextToken(std::stringstream& ss, char delimiter) {
+std::string getNextToken(std::stringstream& ss, char delimitador) {
     std::string token;
-    std::getline(ss, token, delimiter);
-    return token;
+    if (std::getline(ss, token, delimitador)) {
+        return token;
+    }
+    return "";
+
 }
 
 // Carrega os dados do ficheiro para o sistema
 void carregarDados(std::vector<Colaborador>& lista, const std::string& nomeFicheiro) {
     std::ifstream ficheiro(nomeFicheiro);
     if (!ficheiro.is_open()) {
-        std::cout << "Aviso: O ficheiro " << nomeFicheiro << " nao foi encontrado ou esta vazio. A iniciar com dados vazios.\n";
+        std::cout << "AVISO: Ficheiro de dados " << nomeFicheiro << " nao encontrado. Iniciando sistema vazio.\n";
         return;
     }
-
+    
     lista.clear();
     std::string linha_encriptada;
 

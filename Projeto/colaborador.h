@@ -1,9 +1,9 @@
-#ifndef RH-Avancado-Projecto-Final-UC00607_COLABORADOR_H
-#define RH-Avancado-Projecto-Final-UC00607_COLABORADOR_H
+#ifndef COLABORADOR_H
+#define COLABORADOR_H
 
-#include "calendario.h"
+#include "calendario.h" // Apenas o cabeçalho é necessário para TipoMarcacao
 #include <string>
-#include <vector>         
+#include <vector>
 #include <map>
 
 // Estrutura para Formacoes/Cursos
@@ -26,7 +26,7 @@ struct Colaborador {
     std::string nome;
     std::string departamento; // Novo: Departamento
 
-    // Calendário existente (int = Dia/Mês/Ano chave, TipoMarcacao = Férias/Falta)
+    // Calendário existente (int = DiaDoAno, TipoMarcacao = Férias/Falta)
     std::map<int, TipoMarcacao> calendario;
 
     // Novos: Listas de Formacoes e Notas 
@@ -49,7 +49,7 @@ void listarColaboradores(const std::vector<Colaborador>& lista);
 int encontrarColaborador(const std::vector<Colaborador>& lista, const std::string& query, bool isID = false);
 
 // Novo: Procura e mostra dados 
-void buscaColaborador(const std::vector<Colaborador>& lista);
+void procurarColaborador(const std::vector<Colaborador>& lista);
 
 // Novo: Menu de Gestão do Colaborador (Formações/Notas)
 void menuGestaoColaborador(std::vector<Colaborador>& lista);
@@ -60,4 +60,4 @@ void gerirFormacoes(Colaborador& colab);
 // Novo: Funções CRUD de Notas 
 void gerirNotas(Colaborador& colab);
 
-#endif //RH-Avancado-Projecto-Final-UC00607_COLABORADOR_H
+#endif // COLABORADOR_H
