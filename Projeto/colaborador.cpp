@@ -484,22 +484,3 @@ void menuGestaoColaborador(std::vector<Colaborador>& lista) {
         }
     } while (op != 0);
 }
-
-// ===============================================
-// FUNÇÃO DE CONTAGEM DE AUSÊNCIAS 
-// ===============================================
-
-// Conta o total de ausências (Férias e Faltas) num determinado ano
-void contarAusencias(const Colaborador& colab, int ano, int& total_ferias, int& total_faltas) {
-    total_ferias = 0;
-    total_faltas = 0;
-
-    for (const auto& par : colab.calendario) {
-        TipoMarcacao tipo = par.second;
-        if (tipo == TipoMarcacao::FERIAS) {
-            total_ferias++;
-        } else if (tipo == TipoMarcacao::FALTA) {
-            total_faltas++;
-        }
-    }
-}

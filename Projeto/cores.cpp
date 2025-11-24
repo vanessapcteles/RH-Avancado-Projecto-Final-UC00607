@@ -9,3 +9,4 @@ const std::string COR_VERDE = "\033[32m"; // Sucesso
 const std::string COR_VERMELHA = "\033[31m"; // Erros
 const std::string COR_AZUL = "\033[34m"; // Informações
 const std::string COR_ROXO = "\033[35m"; // Notas
+const std::string COR_CIANO = "\033[36m"; // Ciano

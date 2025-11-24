@@ -1,13 +1,8 @@
 #include "colaborador.h"
 #include "calendario.h"
 #include "io.h"
-#include "reports.h" // Inclui os relatórios
+#include "reports.h"
 #include "cores.h"
-#include "colaborador.cpp"
-#include "calendario.cpp"
-#include "io.cpp"
-#include "reports.cpp"
-#include "cores.cpp"
 
 #include <ctime>
 #include <limits>

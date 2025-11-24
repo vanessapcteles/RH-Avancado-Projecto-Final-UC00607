@@ -70,7 +70,4 @@ void gerirFormacoes(Colaborador& colab);
 // Funções CRUD de Notas (usadas internamente ou no menuGestao)
 void gerirNotas(Colaborador& colab);
 
-// Função das ausências para o Dashboard Resumido e Relatórios
-void contarAusencias(const Colaborador& colab, int ano, int& total_ferias, int& total_faltas);
-
 #endif // COLABORADOR_H
