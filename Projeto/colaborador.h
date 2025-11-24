@@ -1,10 +1,14 @@
 #ifndef COLABORADOR_H
 #define COLABORADOR_H
 
-#include "calendario.h" // Apenas o cabeçalho é necessário para TipoMarcacao
+#include "calendario.h" 
 #include <string>
 #include <vector>
 #include <map>
+
+// ===============================================
+// ESTRUTURAS DE DADOS ADICIONAIS
+// ===============================================
 
 // Estrutura para Formacoes/Cursos
 struct Formacao {
@@ -20,44 +24,53 @@ struct Nota {
     std::string data_criacao; // Data em que a nota foi adicionada
 };
 
-// Estrutura que representa um colaborador (Atualizada)
+// ===============================================
+// ESTRUTURA PRINCIPAL
+// ===============================================
+
+// Estrutura que representa um colaborador 
 struct Colaborador {
-    int id; // Novo: ID único (Requisito 2)
+    int id = 0; // ID único
     std::string nome;
-    std::string departamento; // Novo: Departamento
+    std::string departamento; // Departamento
 
     // Calendário existente (int = DiaDoAno, TipoMarcacao = Férias/Falta)
     std::map<int, TipoMarcacao> calendario;
 
-    // Novos: Listas de Formacoes e Notas 
+    //  Listas de Formacoes e Notas 
     std::vector<Formacao> formacoes;
     std::vector<Nota> notas;
 
-    // Campo calculado/resumo 
+    // Campo para o Dashboard
     int dias_ferias_restantes = 22; // Assumindo 22 dias por ano
 };
 
-// --- Declarações de Funções (Protótipos) ---
+// ===============================================
+// DECLARAÇÕES DE FUNÇÕES
+// ===============================================
 
 // Adiciona um novo colaborador à lista
 void adicionarColaborador(std::vector<Colaborador>& lista);
 
-// Lista todos os colaboradores existentes
+// Lista todos os colaboradores existentes (inclui ID e Departamento)
 void listarColaboradores(const std::vector<Colaborador>& lista);
 
-// Encontra o índice de um colaborador pelo nome (ou ID)
+// Encontra o índice de um colaborador pelo nome ou ID
 int encontrarColaborador(const std::vector<Colaborador>& lista, const std::string& query, bool isID = false);
 
-// Novo: Procura e mostra dados 
+// Procura, mostra dados básicos e o calendário do mês atual
 void procurarColaborador(const std::vector<Colaborador>& lista);
 
-// Novo: Menu de Gestão do Colaborador (Formações/Notas)
+// Menu de Gestão do Colaborador (Formações/Notas)
 void menuGestaoColaborador(std::vector<Colaborador>& lista);
 
-// Novo: Funções CRUD de Formação 
+// Funções CRUD de Formação (usadas internamente ou no menuGestao)
 void gerirFormacoes(Colaborador& colab);
 
-// Novo: Funções CRUD de Notas 
+// Funções CRUD de Notas (usadas internamente ou no menuGestao)
 void gerirNotas(Colaborador& colab);
+
+// Função das ausências para o Dashboard Resumido e Relatórios
+void contarAusencias(const Colaborador& colab, int ano, int& total_ferias, int& total_faltas);
 
 #endif // COLABORADOR_H

@@ -13,5 +13,6 @@ extern const std::string COR_VERDE;
 extern const std::string COR_VERMELHA;
 extern const std::string COR_AZUL;
 extern const std::string COR_ROXO;
+extern const std::string COR_CIANO; 
 
 #endif // CORES_H

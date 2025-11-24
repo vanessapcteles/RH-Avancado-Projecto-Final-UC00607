@@ -7,7 +7,7 @@
 #include <iomanip>
 
 // --- Enumeração para Tipo de Marcação ---
-// Define os tipos de marcação de um dia, evitando colisões de nomes
+
 enum class TipoMarcacao {
     LIVRE,       //' ' - Dia normal de trabalho
     FERIAS,     // 'F' - Dia de férias
@@ -56,10 +56,10 @@ void contarAusencias(const Colaborador& colab, int ano, int& totalFerias, int& t
 // Conta o total de ausências num determinado mês e ano
 void contarAusenciasMes(const Colaborador& colab, int mes, int ano, int& totalFerias, int& totalFaltas);
 
-// Conta o total de ausências num determinado mês e ano
+// Conta o total de ausências num determinado mês e ano (alias de contarAusenciasMes)
 void contarAusenciasMensal(const Colaborador& colab, int mes, int ano, int& totalFerias, int& totalFaltas);
 
-// Verificar Comflito de Férias
+// Verificar Comflito de Férias (Implementação placeholder)
 bool verificarConflitoFerias(const Colaborador& colab, int dia, int mes, int ano);
 
 #endif // CALENDARIO_H

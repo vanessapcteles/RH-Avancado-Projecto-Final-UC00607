@@ -2,6 +2,7 @@
 #include "colaborador.h" // Necessário para aceder à estrutura Colaborador
 #include "io.h"        // Necessário para encriptar/desencriptar
 #include "calendario.h" // Necessário para funções de calendário
+#include "cores.h"    // Necessário para cores de output
 #include <vector>
 #include <iostream>
 #include <iomanip>
@@ -162,7 +163,7 @@ void estatisticasDepartamento(const std::vector<Colaborador>& lista) {
 }
 
 
-// --- Implementação da Exportação (Requisito 8) ---
+// --- Implementação da Exportação  ---
 void exportarDados(const std::vector<Colaborador>& lista) {
     if (lista.empty()) {
         std::cout << COR_AMARELA << "AVISO: Nao ha dados para exportar.\n" << RESET_COR;

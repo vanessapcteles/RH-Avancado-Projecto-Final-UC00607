@@ -1,9 +1,15 @@
 #include "colaborador.h"
 #include "calendario.h"
 #include "io.h"
-#include "reports.h" // Inclui os novos relatórios
-
+#include "reports.h" // Inclui os relatórios
 #include "cores.h"
+#include "colaborador.cpp"
+#include "calendario.cpp"
+#include "io.cpp"
+#include "reports.cpp"
+#include "cores.cpp"
+
+#include <ctime>
 #include <limits>
 #include <cstdlib>
 #include <iostream>
@@ -11,6 +17,7 @@
 #include <sstream>
 #include <algorithm>
 #include <vector>
+#include <string>
 
 
 // Função para limpar a consola (dependente do SO)
@@ -34,7 +41,7 @@ void limparConsola() {
 // Apresenta o menu principal (Requisito 9)
 void mostrarMenu() {
     std::cout << COR_AZUL << "\n============================================\n";
-    std::cout << "  Mini-Sistema RH - Menu Principal \n";
+    std::cout << " Mini-Sistema RH - Menu Principal \n";
     std::cout << "============================================\n" << RESET_COR;
     std::cout << " 1. Adicionar Colaborador\n";
     std::cout << " 2. Gerir Marcacoes (Ferias/Faltas)\n";
@@ -61,13 +68,15 @@ void menuGerirMarcacoes(std::vector<Colaborador>& lista) {
     }
 
     listarColaboradores(lista);
-    std::string nome;
+    std::string chave;
     std::cout << COR_AZUL << "\n--- GERIR MARCACOES ---\n" << RESET_COR;
     std::cout << "Coloque o nome do colaborador (ou ID): ";
-    std::getline(std::cin >> std::ws, nome);
+    std::getline(std::cin >> std::ws, chave); // Usa getline para pegar o ID/Nome
 
-    bool isID = std::all_of(nome.begin(), nome.end(), ::isdigit);
-    int indice = encontrarColaborador(lista, nome, isID);
+    // Verifica se a chave fornecida é puramente numérica (ID)
+    bool isID = std::all_of(chave.begin(), chave.end(), ::isdigit);
+    // Usa a versão mais completa da função, assumida em io.cpp
+    int indice = encontrarColaborador(lista, chave, isID); 
 
     if (indice == -1) {
         std::cout << COR_VERMELHA << "ERRO: Colaborador nao encontrado.\n" << RESET_COR;
@@ -83,20 +92,9 @@ void menuGerirMarcacoes(std::vector<Colaborador>& lista) {
     std::cout << " 3. Desmarcar (Remover)\n";
     std::cout << " Opcao: ";
 
-    // Validação de input numérico
-    if (!(std::cin >> op)) {
-        std::cout << COR_AMARELA << "Input invalido. Operacao cancelada.\n" << RESET_COR;
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        return;
-    }
-    std::cout << "Dia (dd): "; std::cin >> dia;
-    std::cout << "Mes (mm): "; std::cin >> mes;
-    std::cout << "Ano (aaaa): "; std::cin >> ano;
-
-    // Validar se o input da data foi numérico
-    if (std::cin.fail()) {
-        std::cout << COR_VERMELHA << "ERRO: Data contem caracteres nao numericos. Operacao cancelada.\n" << RESET_COR;
+    // Lê a opção e as partes da data
+    if (!(std::cin >> op >> dia >> mes >> ano)) {
+        std::cout << COR_VERMELHA << "ERRO: Input invalido para Opcao, Dia, Mes ou Ano.\n" << RESET_COR;
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         return;
@@ -113,7 +111,6 @@ void menuGerirMarcacoes(std::vector<Colaborador>& lista) {
         if (tipoMarcacao == TipoMarcacao::FERIAS) {
             bool conflito = verificarConflitoFerias(colab, dia, mes, ano);
             if (conflito) {
-                // Continua a marcar mesmo com conflito (conforme o requisito)
                 std::cout << COR_AMARELA << "A marcacao vai prosseguir, apesar do conflito no departamento.\n" << RESET_COR;
             }
         }
@@ -134,13 +131,13 @@ void menuVisualizarCalendario(const std::vector<Colaborador>& lista) {
     }
     listarColaboradores(lista);
 
-    std::string nome;
+    std::string chave;
     std::cout << COR_AZUL << "\n--- VISUALIZAR CALENDARIO ---\n" << RESET_COR;
     std::cout << "Coloque o nome do colaborador (ou ID) para o calendario: ";
-    std::getline(std::cin >> std::ws, nome);
+    std::getline(std::cin >> std::ws, chave);
 
-    bool isID = std::all_of(nome.begin(), nome.end(), ::isdigit);
-    int indice = encontrarColaborador(lista, nome, isID);
+    bool isID = std::all_of(chave.begin(), chave.end(), ::isdigit);
+    int indice = encontrarColaborador(lista, chave, isID);
 
     if (indice == -1) {
         std::cout << COR_VERMELHA << "ERRO: Colaborador nao encontrado.\n" << RESET_COR;
@@ -148,19 +145,27 @@ void menuVisualizarCalendario(const std::vector<Colaborador>& lista) {
     }
 
     int mes, ano;
-    std::cout << "Mes (mm): "; std::cin >> mes;
-    std::cout << "Ano (aaaa): "; std::cin >> ano;
-
-    // Validar se o input da data foi numérico e limpar o buffer
-    if (std::cin.fail()) {
-        std::cout << COR_VERMELHA << "ERRO: Data contem caracteres nao numericos.\n" << RESET_COR;
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cout << "Mes (mm): ";
+    // Lê o mes e ano na mesma linha
+    if (!(std::cin >> mes)) { 
+        std::cout << COR_VERMELHA << "ERRO: Mes contem caracteres nao numericos.\n" << RESET_COR;
+        std::cin.clear(); std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); return; 
+    }
+    std::cout << "Ano (aaaa): "; 
+    if (!(std::cin >> ano)) {
+        std::cout << COR_VERMELHA << "ERRO: Ano contem caracteres nao numericos.\n" << RESET_COR;
+        std::cin.clear(); std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); return; 
+    }
+    
+    // Validar se a data é válida (função dataValida assumida em calendario.cpp)
+    if (!dataValida(1, mes, ano)) {
+        std::cout << COR_VERMELHA << "ERRO: Mes ou Ano invalido.\n" << RESET_COR;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpar buffer
         return;
     }
 
     visualizarCalendario(lista[static_cast<size_t>(indice)], mes, ano);
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpar buffer
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpar buffer após a leitura dos números
 }
 
 int main() {
@@ -177,13 +182,18 @@ int main() {
 
         // Validação de input numérico e tratamento de buffer
         if (!(std::cin >> opcao)) {
-            std::cout << COR_AMARELA << "Input invalido. Por favor, digite um numero (1-11).\n" << RESET_COR;
+            std::cout << COR_AMARELA << "Input invalido. Por favor, digite um numero (0-10).\n" << RESET_COR;
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             continue;
         }
-        // O cin.ignore após a leitura de 'opcao' é movido para dentro dos switch/case onde é necessário,
-        // mas é garantido que o buffer está limpo após o loop de validação acima.
+        
+        // Limpar o buffer após a leitura da opção, exceto para opções que leem mais input
+        // A limpeza será feita no início de cada função/caso, se necessário, ou no final.
+        // Como o cin >> opcao só lê o número, o '\n' fica no buffer. Vamos ignorá-lo aqui.
+        if (opcao != 0 && opcao != 7 && opcao != 9) { // Opções que não usam cin.ignore no início
+             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
 
         limparConsola();
 
@@ -199,6 +209,9 @@ int main() {
                 break;
             case 4:
                 listarColaboradores(listaColaboradores);
+                std::cout << "Pressione ENTER para continuar...";
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cin.get();
                 break;
             case 5: // Buscar Colaborador
                 procurarColaborador(listaColaboradores);
@@ -206,17 +219,27 @@ int main() {
             case 6: // Gerir Formações e Notas
                 menuGestaoColaborador(listaColaboradores);
                 break;
-            case 7: // Dashboard
+            case 7: // Dashboard (Não precisa de limpar buffer, pois só lê números dentro)
                 dashboardResumido(listaColaboradores);
+                std::cout << "\nPressione ENTER para continuar...";
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cin.get();
                 break;
             case 8: // Relatório Mensal
                 relatorioMensal(listaColaboradores);
+                std::cout << "\nPressione ENTER para continuar...";
+                std::cin.get();
                 break;
-            case 9: // Estatísticas de Departamento
+            case 9: // Estatísticas de Departamento (Não precisa de limpar buffer, pois só lê números dentro)
                 estatisticasDepartamento(listaColaboradores);
+                std::cout << "\nPressione ENTER para continuar...";
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cin.get();
                 break;
             case 10: // Exportação
                 exportarDados(listaColaboradores);
+                std::cout << "\nPressione ENTER para continuar...";
+                std::cin.get();
                 break;
             case 0:
                 // Guardar dados ao sair
@@ -225,6 +248,10 @@ int main() {
                 return 0;
             default:
                 std::cout << COR_VERMELHA << "Opcao invalida. Tente novamente.\n"<< RESET_COR;
+                // Assegurar que o buffer está limpo
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cout << "Pressione ENTER para continuar...";
+                std::cin.get();
                 break;
         }
     }
