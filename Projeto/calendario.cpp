@@ -169,7 +169,7 @@ char getCharMarcacao(TipoMarcacao tipo) {
     switch (tipo) {
         case TipoMarcacao::FERIAS: return 'F';
         case TipoMarcacao::FALTA: return 'X';
-        case TipoMarcacao::FIM_SEMANA: return 'S';
+        case TipoMarcacao::FIM_SEMANA:
         case TipoMarcacao::LIVRE:
         case TipoMarcacao::NAO_MARCADO:
         default: return ' ';
@@ -200,7 +200,7 @@ void visualizarCalendario(const Colaborador& colab, int mes, int ano) {
     int primeiroDiaDoMes = diaSemana(1, mes, ano); // 0=Domingo, 1=Segunda
     int diaDoAnoInicial = dataParaDiaDoAno(1, mes, ano);
 
-    std::cout << COR_CIANO << "\n--- CALENDARIO DE " << nomeMes(mes) << " DE " << ano << " ---\n" << RESET_COR;
+    std::cout << COR_CIANO << "\n--- Calendario do " << nomeMes(mes) << " do ano:" << ano << " ---\n" << RESET_COR;
     std::cout << COR_AZUL << std::setw(4) << "Dom" << std::setw(4) << "Seg" << std::setw(4) << "Ter" 
               << std::setw(4) << "Qua" << std::setw(4) << "Qui" << std::setw(4) << "Sex" << std::setw(4) << "Sab" << RESET_COR << "\n";
     std::cout << "--------------------------------\n";
@@ -259,7 +259,7 @@ void visualizarCalendario(const Colaborador& colab, int mes, int ano) {
         std::cout << "\n";
     }
     std::cout << "--------------------------------\n";
-    std::cout << "Legenda: F=Ferias, X=Falta, S=Fim de Semana\n";
+    std::cout << "Legenda: F=Ferias, X=Falta \n";
 }
 
 // Conta o total de ausências (Férias e Faltas) num determinado ano

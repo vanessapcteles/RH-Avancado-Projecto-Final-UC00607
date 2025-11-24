@@ -32,7 +32,7 @@ void dashboardResumido(const std::vector<Colaborador>& lista) {
     int anoAtual = tm_local->tm_year + 1900;
     const int DIAS_TOTAIS_FERIAS = 22; // Limite de férias anual
 
-    std::cout << COR_AZUL << "\n--- DASHBOARD RESUMIDO (" << anoAtual << ") ---\n" << RESET_COR;
+    std::cout << COR_AZUL << "\n--- Dashboard Resumido (" << anoAtual << ") ---\n" << RESET_COR;
     std::cout << "Total de Ferias Anuais Disponiveis: " << DIAS_TOTAIS_FERIAS << " dias\n";
     std::cout << "==================================================================\n";
     std::cout << std::left
@@ -68,7 +68,7 @@ void relatorioMensal(const std::vector<Colaborador>& lista) {
     }
 
     int mes, ano;
-    std::cout << COR_AZUL << "\n--- RELATORIO MENSAL ---\n" << RESET_COR;
+    std::cout << COR_AZUL << "\n--- Relatorio Mensal ---\n" << RESET_COR;
     std::cout << "Digite o Mes (mm): ";
     if (!(std::cin >> mes)) { std::cin.clear(); std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); return; }
     std::cout << "Digite o Ano (aaaa): ";
@@ -133,7 +133,7 @@ void estatisticasDepartamento(const std::vector<Colaborador>& lista) {
         stats[colab.departamento].total_faltas += faltas;
     }
 
-    std::cout << COR_AZUL << "\n--- ESTATISTICAS DE DEPARTAMENTO (" << anoAtual << ") ---\n" << RESET_COR;
+    std::cout << COR_AZUL << "\n--- Estatisticas de Departamento (" << anoAtual << ") ---\n" << RESET_COR;
     std::cout << "==================================================\n";
     std::cout << std::left << std::setw(25) << "Departamento" << std::setw(10) << "Ferias" << std::setw(10) << "Faltas" << "Total Ausencias\n";
     std::cout << "--------------------------------------------------\n";
@@ -171,10 +171,10 @@ void exportarDados(const std::vector<Colaborador>& lista) {
     }
 
     int op;
-    std::cout << COR_AZUL << "\n--- EXPORTACAO DE DADOS ---\n" << RESET_COR;
-    std::cout << "1. Exportar Calendario de UM Colaborador (CSV)\n";
-    std::cout << "2. Exportar Relatorio de Departamento (CSV)\n";
-    std::cout << "Opcao: ";
+    std::cout << COR_AZUL << "\n--- Exportacao de Dados ---\n" << RESET_COR;
+    std::cout << "1. Exportar Calendario de um Colaborador\n";
+    std::cout << "2. Exportar Relatorio de Departamento\n";
+    std::cout << COR_AMARELA << "Opcao: " << RESET_COR;
 
     if (!(std::cin >> op) || (op != 1 && op != 2)) {
         std::cout << COR_VERMELHA << "Opcao invalida. A exportacao foi cancelada.\n" << RESET_COR;
@@ -196,7 +196,7 @@ void exportarDados(const std::vector<Colaborador>& lista) {
         }
         const Colaborador& colab = lista[static_cast<size_t>(indice)];
 
-        nomeFicheiro = colab.nome + "_calendario.csv";
+        nomeFicheiro = colab.nome + "_calendario.txt";
         std::ofstream ficheiro(nomeFicheiro);
 
         ficheiro << "ID,Nome,Departamento,Data,Tipo_Marcacao\n";
@@ -237,7 +237,7 @@ void exportarDados(const std::vector<Colaborador>& lista) {
         std::tm* tm_local = std::localtime(&t);
         int anoAtual = tm_local->tm_year + 1900;
 
-        std::string nomeFicheiro = dept + "_relatorio_" + std::to_string(anoAtual) + ".csv";
+        std::string nomeFicheiro = dept + "_relatorio_" + std::to_string(anoAtual) + ".txt";
         std::ofstream ficheiro(nomeFicheiro);
 
         ficheiro << "Departamento,Nome,Ferias_Ano,Faltas_Ano,Dias_Restantes_Ferias\n";

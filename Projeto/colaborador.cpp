@@ -13,6 +13,8 @@
 // FUNÇÕES DE UTILIDADE
 // ===============================================
 
+void limparConsola();
+
 // Retorna o próximo ID disponível
 int getProximoId(const std::vector<Colaborador>& lista) {
     int maxId = 0;
@@ -57,6 +59,7 @@ std::string getDataAtual() {
 void adicionarColaborador(std::vector<Colaborador>& lista) {
     std::string nome, departamento;
     std::cout << COR_AZUL << "\n--- Adicionar Colaborador ---\n" << RESET_COR;
+    limparConsola();
 
     // Nome
     std::cout << "Nome do novo colaborador: ";
@@ -69,6 +72,7 @@ void adicionarColaborador(std::vector<Colaborador>& lista) {
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         if (std::tolower(confirmacao) != 's') {
             std::cout << COR_AMARELA << "Operacao cancelada.\n" << RESET_COR;
+            limparConsola();
             return;
         }
     }
@@ -85,6 +89,7 @@ void adicionarColaborador(std::vector<Colaborador>& lista) {
 
     lista.push_back(novoColab);
     std::cout << COR_VERDE << "Colaborador '" << nome << "' (ID: " << novoColab.id << ") do departamento '" << departamento << "' adicionado com sucesso.\n" << RESET_COR;
+    limparConsola();
 }
 
 // Lista os colaboradores
@@ -102,6 +107,7 @@ void listarColaboradores(const std::vector<Colaborador>& lista) {
                      << colab.departamento << "\n";
     }
     std::cout << "----------------------------------------------------\n";
+    limparConsola();
 }
 
 // Encontra o índice (por nome ou ID) do colaborador na lista
@@ -141,7 +147,7 @@ void procurarColaborador(const std::vector<Colaborador>& lista) {
     }
 
     std::string query;
-    std::cout << COR_AZUL << "\n--- Buscar Colaborador ---\n" << RESET_COR;
+    std::cout << COR_AZUL << "\n--- Procurar Colaborador ---\n" << RESET_COR;
     std::cout << "Digite o nome (parcial ou completo) ou ID do colaborador: ";
     std::getline(std::cin >> std::ws, query);
 
@@ -149,7 +155,8 @@ void procurarColaborador(const std::vector<Colaborador>& lista) {
     int indice = encontrarColaborador(lista, query, isID);
 
     if (indice == -1) {
-        std::cout << COR_VERMELHA << "ERRO: Colaborador nao encontrado com a query: '" << query << "'.\n" << RESET_COR;
+        std::cout << COR_VERMELHA << "ERRO: Colaborador nao encontrado: '" << query << "'.\n" << RESET_COR;
+        limparConsola();
         return;
     }
 
@@ -157,7 +164,7 @@ void procurarColaborador(const std::vector<Colaborador>& lista) {
 
     // Mostrar dados básicos
     std::cout << "\n" << COR_CIANO << "============================================\n";
-    std::cout << "DADOS DO COLABORADOR: " << colab.nome << RESET_COR << " (ID: " << colab.id << ")\n";
+    std::cout << "Dados do Colaborador: " << colab.nome << RESET_COR << " (ID: " << colab.id << ")\n";
     std::cout << COR_CIANO << "============================================\n" << RESET_COR;
     std::cout << "Departamento: " << colab.departamento << "\n";
     std::cout << "Ferias Restantes (Ano): " << colab.dias_ferias_restantes << " dias\n";
@@ -172,6 +179,7 @@ void procurarColaborador(const std::vector<Colaborador>& lista) {
     int anoAtual = tm_local->tm_year + 1900;
 
     visualizarCalendario(colab, mesAtual, anoAtual); 
+    limparConsola();
 }
 
 
@@ -204,6 +212,7 @@ void listarFormacoes(const Colaborador& colab) {
                      << form.data_conclusao << "\n";
     }
     std::cout << "---------------------------------------------------------\n";
+    limparConsola();
 }
 
 void adicionarFormacao(Colaborador& colab) {
@@ -221,6 +230,7 @@ void adicionarFormacao(Colaborador& colab) {
 
     colab.formacoes.push_back(novaForm);
     std::cout << COR_VERDE << "Formacao '" << nome << "' adicionada com sucesso (ID: " << novaForm.id_curso << ").\n" << RESET_COR;
+    limparConsola();
 }
 
 void editarFormacao(Colaborador& colab) {
@@ -254,6 +264,7 @@ void editarFormacao(Colaborador& colab) {
     } else {
         std::cout << COR_VERMELHA << "ERRO: ID de formacao nao encontrado.\n" << RESET_COR;
     }
+    limparConsola();
 }
 
 void removerFormacao(Colaborador& colab) {
@@ -278,12 +289,13 @@ void removerFormacao(Colaborador& colab) {
     } else {
         std::cout << COR_VERMELHA << "ERRO: ID de formacao nao encontrado.\n" << RESET_COR;
     }
+    limparConsola();
 }
 
 void gerirFormacoes(Colaborador& colab) {
     int op;
     do {
-        std::cout << COR_AZUL << "\n--- GERIR FORMACOES de " << colab.nome << " (ID: " << colab.id << ") ---\n" << RESET_COR;
+        std::cout << COR_AZUL << "\n--- Gerir Formacoes de " << colab.nome << " (ID: " << colab.id << ") ---\n" << RESET_COR;
         std::cout << "1. Listar Formacoes\n";
         std::cout << "2. Adicionar Curso\n";
         std::cout << "3. Editar Curso\n";
@@ -306,6 +318,7 @@ void gerirFormacoes(Colaborador& colab) {
             case 4: removerFormacao(colab); break;
             case 0: break;
             default: std::cout << COR_VERMELHA << "Opcao invalida.\n" << RESET_COR;
+            limparConsola();
         }
     } while (op != 0);
 }
@@ -335,9 +348,10 @@ void listarNotas(const Colaborador& colab) {
     std::cout << COR_AZUL << "\n--- Notas Internas de " << colab.nome << " ---\n" << RESET_COR;
     for (const auto& nota : colab.notas) {
         std::cout << COR_CIANO << " ID " << nota.id_nota << RESET_COR << " (Criada em " << nota.data_criacao << "):\n";
-        std::cout << "  - " << nota.texto << "\n";
+        std::cout << " - " << nota.texto << "\n";
     }
     std::cout << "-----------------------------------\n";
+    limparConsola();
 }
 
 
@@ -354,6 +368,7 @@ void adicionarNota(Colaborador& colab) {
 
     colab.notas.push_back(novaNota);
     std::cout << COR_VERDE << "Nota adicionada com sucesso (ID: " << novaNota.id_nota << ", Data: " << novaNota.data_criacao << ").\n" << RESET_COR;
+    limparConsola();
 }
 
 void editarNota(Colaborador& colab) {
@@ -382,6 +397,7 @@ void editarNota(Colaborador& colab) {
     } else {
         std::cout << COR_VERMELHA << "ERRO: ID de nota nao encontrado.\n" << RESET_COR;
     }
+    limparConsola();
 }
 
 void removerNota(Colaborador& colab) {
@@ -406,12 +422,13 @@ void removerNota(Colaborador& colab) {
     } else {
         std::cout << COR_VERMELHA << "ERRO: ID de nota nao encontrado.\n" << RESET_COR;
     }
+    limparConsola();
 }
 
 void gerirNotas(Colaborador& colab) {
     int op;
     do {
-        std::cout << COR_AZUL << "\n--- GERIR NOTAS de " << colab.nome << " (ID: " << colab.id << ") ---\n" << RESET_COR;
+        std::cout << COR_AZUL << "\n--- Gerir Notas de " << colab.nome << " (ID: " << colab.id << ") ---\n" << RESET_COR;
         std::cout << "1. Listar Notas\n";
         std::cout << "2. Adicionar Nota\n";
         std::cout << "3. Editar Nota\n";
@@ -436,6 +453,7 @@ void gerirNotas(Colaborador& colab) {
             default: std::cout << COR_VERMELHA << "Opcao invalida.\n" << RESET_COR;
         }
     } while (op != 0);
+    limparConsola();
 }
 
 // Menu de Gestão do Colaborador (Formações/Notas) 
@@ -462,7 +480,7 @@ void menuGestaoColaborador(std::vector<Colaborador>& lista) {
     int op;
 
     do {
-        std::cout << COR_AZUL << "\n--- GESTAO DE " << colab.nome << " ---\n" << RESET_COR;
+        std::cout << COR_AZUL << "\n--- Gestao de Formacoes/Notas de" << colab.nome << " ---\n" << RESET_COR;
         std::cout << "1. Gerir Formacoes / Cursos\n";
         std::cout << "2. Gerir Notas / Observacoes Internas\n";
         std::cout << "0. Voltar ao Menu Principal\n";
@@ -483,4 +501,5 @@ void menuGestaoColaborador(std::vector<Colaborador>& lista) {
             default: std::cout << COR_VERMELHA << "Opcao invalida.\n" << RESET_COR;
         }
     } while (op != 0);
+    limparConsola();
 }

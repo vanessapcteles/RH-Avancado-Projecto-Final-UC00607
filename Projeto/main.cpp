@@ -64,7 +64,7 @@ void menuGerirMarcacoes(std::vector<Colaborador>& lista) {
 
     listarColaboradores(lista);
     std::string chave;
-    std::cout << COR_AZUL << "\n--- GERIR MARCACOES ---\n" << RESET_COR;
+    std::cout << COR_AZUL << "\n--- Gerir Marcacoes ---\n" << RESET_COR;
     std::cout << "Coloque o nome do colaborador (ou ID): ";
     std::getline(std::cin >> std::ws, chave); // Usa getline para pegar o ID/Nome
 
@@ -85,7 +85,8 @@ void menuGerirMarcacoes(std::vector<Colaborador>& lista) {
     std::cout << " 1. Marcar Ferias (F)\n";
     std::cout << " 2. Marcar Falta (X)\n";
     std::cout << " 3. Desmarcar (Remover)\n";
-    std::cout << " Opcao: ";
+    std::cout << COR_AMARELA << " Opcao: " << RESET_COR;
+    void limparConsola();
 
     // Lê a opção e as partes da data
     if (!(std::cin >> op >> dia >> mes >> ano)) {
@@ -127,7 +128,7 @@ void menuVisualizarCalendario(const std::vector<Colaborador>& lista) {
     listarColaboradores(lista);
 
     std::string chave;
-    std::cout << COR_AZUL << "\n--- VISUALIZAR CALENDARIO ---\n" << RESET_COR;
+    std::cout << COR_AZUL << "\n--- Visualizar Calendario ---\n" << RESET_COR;
     std::cout << "Coloque o nome do colaborador (ou ID) para o calendario: ";
     std::getline(std::cin >> std::ws, chave);
 
@@ -166,7 +167,7 @@ void menuVisualizarCalendario(const std::vector<Colaborador>& lista) {
 int main() {
     std::vector<Colaborador> listaColaboradores;
     const std::string FICHEIRO_DADOS = "rh_data.txt";
-
+    
     // Carregar dados ao iniciar
     carregarDados(listaColaboradores, FICHEIRO_DADOS);
 
@@ -183,10 +184,7 @@ int main() {
             continue;
         }
         
-        // Limpar o buffer após a leitura da opção, exceto para opções que leem mais input
-        // A limpeza será feita no início de cada função/caso, se necessário, ou no final.
-        // Como o cin >> opcao só lê o número, o '\n' fica no buffer. Vamos ignorá-lo aqui.
-        if (opcao != 0 && opcao != 7 && opcao != 9) { // Opções que não usam cin.ignore no início
+        if (opcao != 0 && opcao != 7 && opcao != 9) { 
              std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
 
@@ -195,46 +193,56 @@ int main() {
         switch (opcao) {
             case 1:
                 adicionarColaborador(listaColaboradores);
+                limparConsola();
                 break;
             case 2:
                 menuGerirMarcacoes(listaColaboradores);
+                limparConsola();
                 break;
             case 3:
                 menuVisualizarCalendario(listaColaboradores);
+                limparConsola();
                 break;
             case 4:
                 listarColaboradores(listaColaboradores);
                 std::cout << "Pressione ENTER para continuar...";
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 std::cin.get();
+                limparConsola();
                 break;
-            case 5: // Buscar Colaborador
+            case 5: // Procurar Colaborador
                 procurarColaborador(listaColaboradores);
+                limparConsola();
                 break;
             case 6: // Gerir Formações e Notas
                 menuGestaoColaborador(listaColaboradores);
+                limparConsola();
                 break;
-            case 7: // Dashboard (Não precisa de limpar buffer, pois só lê números dentro)
+            case 7: // Dashboard Resumido
                 dashboardResumido(listaColaboradores);
                 std::cout << "\nPressione ENTER para continuar...";
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 std::cin.get();
+                limparConsola();
                 break;
             case 8: // Relatório Mensal
                 relatorioMensal(listaColaboradores);
                 std::cout << "\nPressione ENTER para continuar...";
                 std::cin.get();
+                limparConsola();
                 break;
-            case 9: // Estatísticas de Departamento (Não precisa de limpar buffer, pois só lê números dentro)
+            case 9: // Estatísticas de Departamento 
                 estatisticasDepartamento(listaColaboradores);
                 std::cout << "\nPressione ENTER para continuar...";
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 std::cin.get();
+                limparConsola();
                 break;
             case 10: // Exportação
                 exportarDados(listaColaboradores);
                 std::cout << "\nPressione ENTER para continuar...";
                 std::cin.get();
+                limparConsola();
                 break;
             case 0:
                 // Guardar dados ao sair
@@ -243,10 +251,10 @@ int main() {
                 return 0;
             default:
                 std::cout << COR_VERMELHA << "Opcao invalida. Tente novamente.\n"<< RESET_COR;
-                // Assegurar que o buffer está limpo
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 std::cout << "Pressione ENTER para continuar...";
                 std::cin.get();
+                limparConsola();
                 break;
         }
     }

@@ -12,7 +12,7 @@ enum class TipoMarcacao {
     LIVRE,       //' ' - Dia normal de trabalho
     FERIAS,     // 'F' - Dia de férias
     FALTA,      // 'X' - Dia de falta
-    FIM_SEMANA, // 'S' - Fim de semana (normalmente não é marcável pelo utilizador)
+    FIM_SEMANA, // '' - Fim de semana (normalmente não é marcável pelo utilizador)
     NAO_MARCADO // 'U' - Não marcado (usado internamente)
 };
 
