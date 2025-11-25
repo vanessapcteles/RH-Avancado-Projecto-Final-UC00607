@@ -81,9 +81,9 @@ void relatorioMensal(const std::vector<Colaborador>& lista) {
     }
 
     std::cout << "\n============================================\n";
-    std::cout << COR_AZUL << " RELATORIO DE AUSENCIAS - " << std::setw(2) << std::setfill('0') << mes << "/" << ano << RESET_COR << "\n";
+    std::cout << COR_AZUL << " Relatorio Ausencias - " << std::setw(2) << std::setfill('0') << mes << "/" << ano << RESET_COR << "\n";
     std::cout << "============================================\n";
-    std::cout << std::left << std::setw(30) << "Colaborador" << std::setw(10) << "Ferias (F)" << "Faltas (X)\n";
+    std::cout << std::setfill(' ') << std::left << std::setw(30) << "Colaborador" << std::setw(10) << "Ferias (F)" << "Faltas (X)\n";
     std::cout << "--------------------------------------------\n";
 
     for (const auto& colab : lista) {
@@ -91,7 +91,7 @@ void relatorioMensal(const std::vector<Colaborador>& lista) {
         int faltas = 0;
         contarAusenciasMes(colab, mes, ano, ferias, faltas);
 
-        std::cout << std::left
+        std::cout << std::setfill(' ') << std::left
                   << std::setw(30) << colab.nome
                   << std::setw(10) << ferias
                   << faltas << "\n";
@@ -199,7 +199,7 @@ void exportarDados(const std::vector<Colaborador>& lista) {
         nomeFicheiro = colab.nome + "_calendario.txt";
         std::ofstream ficheiro(nomeFicheiro);
 
-        ficheiro << "ID,Nome,Departamento,Data,Tipo_Marcacao\n";
+        ficheiro << "ID, Nome, Departamento, Data, Tipo_Marcacao\n";
         for (const auto& par : colab.calendario) {
             int chave = par.first; // YYYYMMDD
             int ano = chave / 10000;
@@ -240,7 +240,7 @@ void exportarDados(const std::vector<Colaborador>& lista) {
         std::string nomeFicheiro = dept + "_relatorio_" + std::to_string(anoAtual) + ".txt";
         std::ofstream ficheiro(nomeFicheiro);
 
-        ficheiro << "Departamento,Nome,Ferias_Ano,Faltas_Ano,Dias_Restantes_Ferias\n";
+        ficheiro << "Departamento, Nome, Ferias ao Ano, Faltas ao Ano, Dias Restantes de Ferias\n";
 
         bool foundDept = false;
         for (const auto& colab : lista) {

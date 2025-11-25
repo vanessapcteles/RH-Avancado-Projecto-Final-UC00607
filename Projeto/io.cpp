@@ -8,6 +8,7 @@
 #include <cctype>
 #include <string>
 #include <map>
+#include <cstdlib> // Necessário para system()
 #include "cores.h"
 
 // Constante para a chave da Cifra de César
@@ -100,10 +101,11 @@ void guardarDados(const std::vector<Colaborador>& colaboradores, const std::stri
             calendarioStr.pop_back();
         }
 
-        // 3. Escrever a linha: Nome;Depto;ID;Calendario
+        // 3. Escrever a linha: Nome;Depto;ID;DiasFerias;Calendario
         ficheiro << nomeCifrado << ";"
                  << deptoCifrado << ";"
                  << colab.id << ";"
+                 << colab.dias_ferias_restantes << ";"
                  << calendarioStr << "\n";
     }
 
@@ -126,6 +128,7 @@ void carregarDados(std::vector<Colaborador>& lista, const std::string& nomeFiche
         std::string nomeCifrado = getNextToken(ss, ';');
         std::string deptoCifrado = getNextToken(ss, ';');
         std::string idStr = getNextToken(ss, ';');
+        std::string diasFeriasStr = getNextToken(ss, ';');
         std::string calendarioEncodedStr = getNextToken(ss, ';');
         
         try {
@@ -135,6 +138,7 @@ void carregarDados(std::vector<Colaborador>& lista, const std::string& nomeFiche
             colab.nome = desencriptar(nomeCifrado, chave_atual);
             colab.departamento = desencriptar(deptoCifrado, chave_atual);
             colab.id = std::stoi(idStr);
+            colab.dias_ferias_restantes = diasFeriasStr.empty() ? 22 : std::stoi(diasFeriasStr);
 
             // Deserializar o Calendário (Formato: Dia:Tipo,Dia:Tipo,...)
             std::stringstream ssCalendario(calendarioEncodedStr);
@@ -155,5 +159,14 @@ void carregarDados(std::vector<Colaborador>& lista, const std::string& nomeFiche
         }
     }
     std::cout << COR_VERDE << "[INFO] " << lista.size() << " colaboradores carregados com sucesso.\n" << RESET_COR;
+}
+
+// Função para limpar a consola
+void limparConsola() {
+    #ifdef _WIN32
+        std::system("cls");
+    #else
+        std::system("clear");
+    #endif
 }
 

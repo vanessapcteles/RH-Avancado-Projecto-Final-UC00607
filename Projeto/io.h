@@ -24,4 +24,7 @@ void carregarDados(std::vector<Colaborador>& colaboradores, const std::string& n
 // Função para exportar dados 
 void exportarDados(const std::vector<Colaborador>& colaboradores);
 
+// Função para limpar a consola
+void limparConsola();
+
 #endif // IO_H

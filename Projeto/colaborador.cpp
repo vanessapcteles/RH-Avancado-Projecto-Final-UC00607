@@ -8,12 +8,11 @@
 #include <sstream>
 #include <iomanip>
 #include "cores.h"
+#include "io.h"
 
 // ===============================================
 // FUNÇÕES DE UTILIDADE
 // ===============================================
-
-void limparConsola();
 
 // Retorna o próximo ID disponível
 int getProximoId(const std::vector<Colaborador>& lista) {
@@ -59,7 +58,7 @@ std::string getDataAtual() {
 void adicionarColaborador(std::vector<Colaborador>& lista) {
     std::string nome, departamento;
     std::cout << COR_AZUL << "\n--- Adicionar Colaborador ---\n" << RESET_COR;
-    limparConsola();
+
 
     // Nome
     std::cout << "Nome do novo colaborador: ";
@@ -69,10 +68,10 @@ void adicionarColaborador(std::vector<Colaborador>& lista) {
         char confirmacao;
         std::cout << COR_VERMELHA << "ERRO: Colaborador com o nome '" << nome << "' ja existe. Deseja adicionar mesmo assim? (S/N): " << RESET_COR;
         std::cin >> confirmacao;
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
         if (std::tolower(confirmacao) != 's') {
             std::cout << COR_AMARELA << "Operacao cancelada.\n" << RESET_COR;
-            limparConsola();
+        
             return;
         }
     }
@@ -89,7 +88,7 @@ void adicionarColaborador(std::vector<Colaborador>& lista) {
 
     lista.push_back(novoColab);
     std::cout << COR_VERDE << "Colaborador '" << nome << "' (ID: " << novoColab.id << ") do departamento '" << departamento << "' adicionado com sucesso.\n" << RESET_COR;
-    limparConsola();
+
 }
 
 // Lista os colaboradores
@@ -107,7 +106,7 @@ void listarColaboradores(const std::vector<Colaborador>& lista) {
                      << colab.departamento << "\n";
     }
     std::cout << "----------------------------------------------------\n";
-    limparConsola();
+
 }
 
 // Encontra o índice (por nome ou ID) do colaborador na lista
@@ -156,7 +155,7 @@ void procurarColaborador(const std::vector<Colaborador>& lista) {
 
     if (indice == -1) {
         std::cout << COR_VERMELHA << "ERRO: Colaborador nao encontrado: '" << query << "'.\n" << RESET_COR;
-        limparConsola();
+    
         return;
     }
 
@@ -179,7 +178,7 @@ void procurarColaborador(const std::vector<Colaborador>& lista) {
     int anoAtual = tm_local->tm_year + 1900;
 
     visualizarCalendario(colab, mesAtual, anoAtual); 
-    limparConsola();
+
 }
 
 
@@ -212,7 +211,7 @@ void listarFormacoes(const Colaborador& colab) {
                      << form.data_conclusao << "\n";
     }
     std::cout << "---------------------------------------------------------\n";
-    limparConsola();
+
 }
 
 void adicionarFormacao(Colaborador& colab) {
@@ -230,7 +229,7 @@ void adicionarFormacao(Colaborador& colab) {
 
     colab.formacoes.push_back(novaForm);
     std::cout << COR_VERDE << "Formacao '" << nome << "' adicionada com sucesso (ID: " << novaForm.id_curso << ").\n" << RESET_COR;
-    limparConsola();
+
 }
 
 void editarFormacao(Colaborador& colab) {
@@ -242,10 +241,10 @@ void editarFormacao(Colaborador& colab) {
     if (!(std::cin >> id_curso)) { 
         std::cout << COR_AMARELA << "Input invalido.\n" << RESET_COR;
         std::cin.clear(); 
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
+        std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n'); 
         return; 
     }
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
 
     auto it = std::find_if(colab.formacoes.begin(), colab.formacoes.end(),
                            [id_curso](const Formacao& f){ return f.id_curso == id_curso; });
@@ -264,7 +263,7 @@ void editarFormacao(Colaborador& colab) {
     } else {
         std::cout << COR_VERMELHA << "ERRO: ID de formacao nao encontrado.\n" << RESET_COR;
     }
-    limparConsola();
+
 }
 
 void removerFormacao(Colaborador& colab) {
@@ -275,10 +274,10 @@ void removerFormacao(Colaborador& colab) {
     if (!(std::cin >> id_curso)) { 
         std::cout << COR_AMARELA << "Input invalido.\n" << RESET_COR;
         std::cin.clear(); 
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
+        std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n'); 
         return; 
     }
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
 
     auto it = std::remove_if(colab.formacoes.begin(), colab.formacoes.end(),
                              [id_curso](const Formacao& f){ return f.id_curso == id_curso; });
@@ -289,7 +288,7 @@ void removerFormacao(Colaborador& colab) {
     } else {
         std::cout << COR_VERMELHA << "ERRO: ID de formacao nao encontrado.\n" << RESET_COR;
     }
-    limparConsola();
+
 }
 
 void gerirFormacoes(Colaborador& colab) {
@@ -306,7 +305,7 @@ void gerirFormacoes(Colaborador& colab) {
         if (!(std::cin >> op)) {
             std::cout << COR_VERMELHA << "Input invalido. Tente novamente.\n" << RESET_COR;
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
             op = -1; // Força repetição ou default
             continue;
         }
@@ -318,7 +317,7 @@ void gerirFormacoes(Colaborador& colab) {
             case 4: removerFormacao(colab); break;
             case 0: break;
             default: std::cout << COR_VERMELHA << "Opcao invalida.\n" << RESET_COR;
-            limparConsola();
+        
         }
     } while (op != 0);
 }
@@ -351,7 +350,7 @@ void listarNotas(const Colaborador& colab) {
         std::cout << " - " << nota.texto << "\n";
     }
     std::cout << "-----------------------------------\n";
-    limparConsola();
+
 }
 
 
@@ -368,7 +367,7 @@ void adicionarNota(Colaborador& colab) {
 
     colab.notas.push_back(novaNota);
     std::cout << COR_VERDE << "Nota adicionada com sucesso (ID: " << novaNota.id_nota << ", Data: " << novaNota.data_criacao << ").\n" << RESET_COR;
-    limparConsola();
+
 }
 
 void editarNota(Colaborador& colab) {
@@ -379,10 +378,10 @@ void editarNota(Colaborador& colab) {
     if (!(std::cin >> id_nota)) { 
         std::cout << COR_AMARELA << "Input invalido.\n" << RESET_COR;
         std::cin.clear(); 
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
+        std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n'); 
         return; 
     }
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
 
     auto it = std::find_if(colab.notas.begin(), colab.notas.end(),
                            [id_nota](const Nota& n){ return n.id_nota == id_nota; });
@@ -397,7 +396,7 @@ void editarNota(Colaborador& colab) {
     } else {
         std::cout << COR_VERMELHA << "ERRO: ID de nota nao encontrado.\n" << RESET_COR;
     }
-    limparConsola();
+
 }
 
 void removerNota(Colaborador& colab) {
@@ -408,10 +407,10 @@ void removerNota(Colaborador& colab) {
     if (!(std::cin >> id_nota)) { 
         std::cout << COR_AMARELA << "Input invalido.\n" << RESET_COR;
         std::cin.clear(); 
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
+        std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n'); 
         return; 
     }
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
 
     auto it = std::remove_if(colab.notas.begin(), colab.notas.end(),
                              [id_nota](const Nota& n){ return n.id_nota == id_nota; });
@@ -422,7 +421,7 @@ void removerNota(Colaborador& colab) {
     } else {
         std::cout << COR_VERMELHA << "ERRO: ID de nota nao encontrado.\n" << RESET_COR;
     }
-    limparConsola();
+
 }
 
 void gerirNotas(Colaborador& colab) {
@@ -439,7 +438,7 @@ void gerirNotas(Colaborador& colab) {
         if (!(std::cin >> op)) {
             std::cout << COR_VERMELHA << "Input invalido. Tente novamente.\n" << RESET_COR;
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
             op = -1; // Força repetição ou default
             continue;
         }
@@ -453,7 +452,7 @@ void gerirNotas(Colaborador& colab) {
             default: std::cout << COR_VERMELHA << "Opcao invalida.\n" << RESET_COR;
         }
     } while (op != 0);
-    limparConsola();
+
 }
 
 // Menu de Gestão do Colaborador (Formações/Notas) 
@@ -489,7 +488,7 @@ void menuGestaoColaborador(std::vector<Colaborador>& lista) {
         if (!(std::cin >> op)) {
             std::cout << COR_VERMELHA << "Input invalido. Tente novamente.\n" << RESET_COR;
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
             op = -1;
             continue;
         }
@@ -501,5 +500,5 @@ void menuGestaoColaborador(std::vector<Colaborador>& lista) {
             default: std::cout << COR_VERMELHA << "Opcao invalida.\n" << RESET_COR;
         }
     } while (op != 0);
-    limparConsola();
+
 }
