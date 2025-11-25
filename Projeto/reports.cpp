@@ -60,7 +60,7 @@ void dashboardResumido(const std::vector<Colaborador>& lista) {
     std::cout << "==================================================================\n";
 }
 
-// --- Implementação dos Relatórios Mensais (Requisito 1) ---
+// --- Implementação dos Relatórios Mensais ---
 void relatorioMensal(const std::vector<Colaborador>& lista) {
     if (lista.empty()) {
         std::cout << COR_AMARELA << "AVISO: Nao ha colaboradores para gerar relatorios.\n" << RESET_COR;
@@ -100,7 +100,7 @@ void relatorioMensal(const std::vector<Colaborador>& lista) {
 }
 
 
-// --- Implementação das Estatísticas de Departamento (Requisito 3) ---
+// --- Implementação das Estatísticas de Departamento ---
 void estatisticasDepartamento(const std::vector<Colaborador>& lista) {
     if (lista.empty()) {
         std::cout << COR_AMARELA << "AVISO: Nao ha colaboradores para gerar estatisticas.\n" << RESET_COR;

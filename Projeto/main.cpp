@@ -39,7 +39,7 @@ void mostrarMenu() {
     std::cout << " 9. Estatisticas de Departamento\n"; 
     std::cout << "10. Exportar Dados (Calendario/Relatorio)\n"; 
     std::cout << "--------------------------------------------\n";
-    std::cout << COR_VERMELHA << "0. Guardar e Sair\n" << RESET_COR;
+    std::cout << COR_ROXO << "0. Guardar e Sair\n" << RESET_COR;
     std::cout << "--------------------------------------------\n";
     std::cout << "Escolha uma opcao (1 - 10 em que 0 - Sair): ";
 }

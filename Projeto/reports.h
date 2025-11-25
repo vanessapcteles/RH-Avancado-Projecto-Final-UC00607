@@ -1,7 +1,7 @@
 #ifndef REPORTS_H
 #define REPORTS_H
 
-// Incluir as dependências essenciais para as funções usarem os tipos Colaborador, etc.
+// Inclui as dependências essenciais para as funções usarem os tipos Colaborador, etc.
 #include "colaborador.h" 
 #include "calendario.h" 
 #include <vector>

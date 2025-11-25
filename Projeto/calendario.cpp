@@ -5,7 +5,7 @@
 #include <cmath>
 #include <algorithm>
 #include <limits>
-#include "cores.h" // Assumindo que o ficheiro de cores é usado
+#include "cores.h" 
 
 // ===============================================
 // FUNÇÕES AUXILIARES DE DATA
@@ -70,7 +70,7 @@ int dataParaDiaDoAno(int dia, int mes, int ano) {
 
 // Retorna o dia da semana (0=Domingo, 1=Segunda, ..., 6=Sábado) usando o Algoritmo Zeller
 int diaSemana(int dia, int mes, int ano) {
-    // Algoritmo Zeller para Geração Gregoriana (adaptado para C++)
+    // Algoritmo Zeller para Geração Gregoriana do Calendário
     int Y = ano;
     int m = mes;
     int d = dia;
@@ -200,7 +200,7 @@ void visualizarCalendario(const Colaborador& colab, int mes, int ano) {
     int primeiroDiaDoMes = diaSemana(1, mes, ano); // 0=Domingo, 1=Segunda
     int diaDoAnoInicial = dataParaDiaDoAno(1, mes, ano);
 
-    std::cout << COR_CIANO << "\n--- Calendario do " << nomeMes(mes) << " do ano:" << ano << " ---\n" << RESET_COR;
+    std::cout << COR_CIANO << "\n--- Calendario do " << nomeMes(mes) << " do ano " << ano << " ---\n" << RESET_COR;
     std::cout << COR_AZUL << std::setw(4) << "Dom" << std::setw(4) << "Seg" << std::setw(4) << "Ter" 
               << std::setw(4) << "Qua" << std::setw(4) << "Qui" << std::setw(4) << "Sex" << std::setw(4) << "Sab" << RESET_COR << "\n";
     std::cout << "--------------------------------\n";

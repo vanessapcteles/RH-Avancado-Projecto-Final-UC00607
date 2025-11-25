@@ -6,7 +6,7 @@
 #include "colaborador.h" // Necessário para a estrutura Colaborador
 #include "calendario.h" // Necessário para TipoMarcacao
 
-// --- Constante da chave de codificação (Declarada como 'extern') ---
+// --- Constante da chave de codificação ---
 extern const int CHAVE_CESAR;
 
 // --- Funções de Cifra de César ---

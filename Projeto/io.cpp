@@ -101,7 +101,7 @@ void guardarDados(const std::vector<Colaborador>& colaboradores, const std::stri
             calendarioStr.pop_back();
         }
 
-        // 3. Escrever a linha: Nome;Depto;ID;DiasFerias;Calendario
+        // Escrever a linha: Nome;Depto;ID;DiasFerias;Calendario
         ficheiro << nomeCifrado << ";"
                  << deptoCifrado << ";"
                  << colab.id << ";"
