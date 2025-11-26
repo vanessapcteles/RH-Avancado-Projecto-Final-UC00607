@@ -28,20 +28,20 @@ void mostrarMenu() {
     std::cout << " Mini-Sistema RH - Menu Principal \n";
     std::cout << "============================================\n" << RESET_COR;
     std::cout << " 1. Adicionar Colaborador\n";
-    std::cout << " 2. Gerir Marcacoes (Ferias/Faltas)\n";
-    std::cout << " 3. Visualizar Calendario Mensal\n";
-    std::cout << " 4. Listar Todos os Colaboradores\n";
-    std::cout << " 5. Procurar Colaborador (Dados e Calendario)\n"; 
-    std::cout << " 6. Gerir Formacoes e Notas (CRUD)\n";
-    std::cout << "--------------------------------------------\n";
-    std::cout << " 7. Dashboard (Resumo Anual)\n"; 
-    std::cout << " 8. Relatorio Mensal (Ausencias por Colaborador)\n";
-    std::cout << " 9. Estatisticas de Departamento\n"; 
-    std::cout << "10. Exportar Dados (Calendario/Relatorio)\n"; 
+    std::cout << " 2. Remover Colaborador\n";
+    std::cout << " 3. Gerir Marcacoes (Ferias/Faltas)\n";
+    std::cout << " 4. Visualizar Calendario Mensal\n";
+    std::cout << " 5. Listar Todos os Colaboradores\n";
+    std::cout << " 6. Procurar Colaborador (Dados e Calendario)\n"; 
+    std::cout << " 7. Gerir Formacoes e Notas (CRUD)\n";
+    std::cout << " 8. Dashboard (Resumo)\n"; 
+    std::cout << " 9. Relatorio Mensal (Ausencias por Colaborador)\n";
+    std::cout << " 10. Estatisticas de Departamento\n"; 
+    std::cout << "11. Exportar Dados (Calendario/Relatorio)\n"; 
     std::cout << "--------------------------------------------\n";
     std::cout << COR_ROXO << "0. Guardar e Sair\n" << RESET_COR;
     std::cout << "--------------------------------------------\n";
-    std::cout << "Escolha uma opcao (1 - 10 em que 0 - Sair): ";
+    std::cout << "Escolha uma opcao (1 - 11 em que 0 - Sair): ";
 }
 
 // Função de ligação entre o menu e a marcação 
@@ -107,7 +107,7 @@ void menuGerirMarcacoes(std::vector<Colaborador>& lista) {
 
         // Verificar Conflito de Férias 
         if (tipoMarcacao == TipoMarcacao::FERIAS) {
-            bool conflito = verificarConflitoFerias(colab, dia, mes, ano);
+            bool conflito = verificarConflitoFerias(colab, dia, mes, ano, lista);
             if (conflito) {
                 std::cout << COR_AMARELA << "A marcacao vai prosseguir, apesar do conflito no departamento.\n" << RESET_COR;
             }
@@ -196,49 +196,53 @@ int main() {
 
                 break;
             case 2:
-                menuGerirMarcacoes(listaColaboradores);
+                removerColaborador(listaColaboradores);
 
                 break;
             case 3:
-                menuVisualizarCalendario(listaColaboradores);
+                menuGerirMarcacoes(listaColaboradores);
 
                 break;
             case 4:
+                menuVisualizarCalendario(listaColaboradores);
+
+                break;
+            case 5:
                 listarColaboradores(listaColaboradores);
                 std::cout << "Pressione ENTER para continuar...";
                 std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
                 std::cin.get();
 
                 break;
-            case 5: // Procurar Colaborador
+            case 6: // Procurar Colaborador
                 procurarColaborador(listaColaboradores);
 
                 break;
-            case 6: // Gerir Formações e Notas
+            case 7: // Gerir Formações e Notas
                 menuGestaoColaborador(listaColaboradores);
 
                 break;
-            case 7: // Dashboard Resumido
+            case 8: // Dashboard Resumido
                 dashboardResumido(listaColaboradores);
                 std::cout << "\nPressione ENTER para continuar...";
                 std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
                 std::cin.get();
 
                 break;
-            case 8: // Relatório Mensal
+            case 9: // Relatório Mensal
                 relatorioMensal(listaColaboradores);
                 std::cout << "\nPressione ENTER para continuar...";
                 std::cin.get();
 
                 break;
-            case 9: // Estatísticas de Departamento 
+            case 10: // Estatísticas de Departamento 
                 estatisticasDepartamento(listaColaboradores);
                 std::cout << "\nPressione ENTER para continuar...";
                 std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
                 std::cin.get();
 
                 break;
-            case 10: // Exportação
+            case 11: // Exportação
                 exportarDados(listaColaboradores);
                 std::cout << "\nPressione ENTER para continuar...";
                 std::cin.get();

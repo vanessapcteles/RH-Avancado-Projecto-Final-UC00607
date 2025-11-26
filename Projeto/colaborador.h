@@ -52,6 +52,9 @@ struct Colaborador {
 // Adiciona um novo colaborador à lista
 void adicionarColaborador(std::vector<Colaborador>& lista);
 
+// Remove um colaborador da lista
+void removerColaborador(std::vector<Colaborador>& lista);
+
 // Lista todos os colaboradores existentes (inclui ID e Departamento)
 void listarColaboradores(const std::vector<Colaborador>& lista);
 

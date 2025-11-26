@@ -91,6 +91,47 @@ void adicionarColaborador(std::vector<Colaborador>& lista) {
 
 }
 
+// Remove um colaborador da lista
+void removerColaborador(std::vector<Colaborador>& lista) {
+    if (lista.empty()) {
+        std::cout << COR_AMARELA << "AVISO: Nao ha colaboradores para remover.\n" << RESET_COR;
+        return;
+    }
+
+    listarColaboradores(lista);
+    std::string chave;
+    std::cout << COR_AZUL << "\n--- Remover Colaborador ---\n" << RESET_COR;
+    std::cout << "Digite o nome ou ID do colaborador a remover: ";
+    std::getline(std::cin >> std::ws, chave);
+
+    bool isID = std::all_of(chave.begin(), chave.end(), ::isdigit);
+    int indice = encontrarColaborador(lista, chave, isID);
+
+    if (indice == -1) {
+        std::cout << COR_VERMELHA << "ERRO: Colaborador nao encontrado.\n" << RESET_COR;
+        return;
+    }
+
+    const Colaborador& colab = lista[static_cast<size_t>(indice)];
+    
+    // Pedir confirmação
+    std::cout << COR_AMARELA << "Tem certeza que deseja remover o colaborador '" << colab.nome 
+              << "' (ID: " << colab.id << ")? (S/N): " << RESET_COR;
+    char confirmacao;
+    std::cin >> confirmacao;
+    std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
+
+    if (std::tolower(confirmacao) == 's') {
+        std::string nomeRemovido = colab.nome;
+        int idRemovido = colab.id;
+        lista.erase(lista.begin() + indice);
+        std::cout << COR_VERDE << "Colaborador '" << nomeRemovido << "' (ID: " << idRemovido 
+                  << ") removido com sucesso.\n" << RESET_COR;
+    } else {
+        std::cout << COR_AMARELA << "Operacao cancelada.\n" << RESET_COR;
+    }
+}
+
 // Lista os colaboradores
 void listarColaboradores(const std::vector<Colaborador>& lista) {
     if (lista.empty()) {

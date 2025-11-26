@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 #include <iostream>
 #include <iomanip>
 
@@ -59,7 +60,7 @@ void contarAusenciasMes(const Colaborador& colab, int mes, int ano, int& totalFe
 // Conta o total de ausências num determinado mês e ano (alias de contarAusenciasMes)
 void contarAusenciasMensal(const Colaborador& colab, int mes, int ano, int& totalFerias, int& totalFaltas);
 
-// Verificar Comflito de Férias (Implementação placeholder)
-bool verificarConflitoFerias(const Colaborador& colab, int dia, int mes, int ano);
+// Verificar Conflito de Férias - verifica se outros colaboradores do mesmo departamento já têm férias marcadas
+bool verificarConflitoFerias(const Colaborador& colab, int dia, int mes, int ano, const std::vector<Colaborador>& todosColaboradores);
 
 #endif // CALENDARIO_H

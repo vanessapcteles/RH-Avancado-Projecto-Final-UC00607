@@ -306,12 +306,34 @@ void contarAusenciasMensal(const Colaborador& colab, int mes, int ano, int& tota
 }
 
 // Verificar Conflito de Férias
-bool verificarConflitoFerias(const Colaborador& colab, int dia, int mes, int ano) {
+bool verificarConflitoFerias(const Colaborador& colab, int dia, int mes, int ano, const std::vector<Colaborador>& todosColaboradores) {
     if (!dataValida(dia, mes, ano)) return false;
     int diaDoAno = dataParaDiaDoAno(dia, mes, ano);
-
-    if (colab.calendario.count(diaDoAno) && colab.calendario.at(diaDoAno) == TipoMarcacao::FERIAS) {
-        return true; // Colaborador já tem férias marcadas neste dia
+    // Verificar se outros colaboradores do mesmo departamento já têm férias marcadas neste dia
+    for (const auto& outroColab : todosColaboradores) {
+        // Ignorar o próprio colaborador
+        if (outroColab.id == colab.id) continue;
+        
+        // Verificar apenas colaboradores do mesmo departamento
+        if (outroColab.departamento == colab.departamento) {
+            // Verificar se este colaborador tem férias marcadas no mesmo dia
+            auto it = outroColab.calendario.find(diaDoAno);
+            if (it != outroColab.calendario.end() && it->second == TipoMarcacao::FERIAS) {
+                std::cout << COR_AMARELA << "AVISO: O colaborador '" << outroColab.nome 
+                          << "' do mesmo departamento ja tem ferias marcadas neste dia.\n" << RESET_COR;
+                std::cout << COR_AZUL << "Deseja proceder? (S/N): " << RESET_COR;
+                char resposta;
+                std::cin >> resposta;
+                if (resposta != 'S' && resposta != 's')
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                } 
+            }
+        }
     }
-    return false;
+    return false; // Sem conflito
 }

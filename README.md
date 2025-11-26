@@ -48,6 +48,7 @@ g++ main.cpp calendario.cpp colaborador.cpp cores.cpp io.cpp reports.cpp -o main
 ### 1️⃣ Gestão de Colaboradores
 
 - **Adicionar Colaborador**: Registo de novos colaboradores com ID automático
+- **Remover Colaborador**: Remoção de colaboradores com confirmação de segurança
 - **Listar Colaboradores**: Visualização de todos os colaboradores registados
 - **Procurar Colaborador**: Pesquisa por nome ou ID com exibição de dados e calendário
 - **Gestão de Formações**: CRUD completo de cursos e formações
@@ -58,7 +59,8 @@ g++ main.cpp calendario.cpp colaborador.cpp cores.cpp io.cpp reports.cpp -o main
 - **Marcar Férias**: Registo de dias de férias com validação
 - **Marcar Faltas**: Registo de faltas
 - **Desmarcar Dias**: Remoção de marcações
-- **Deteção de Conflitos**: Aviso de conflitos de férias no departamento
+- **Deteção Inteligente de Conflitos**: Sistema verifica se outros colaboradores do mesmo departamento já têm férias marcadas no mesmo dia
+- **Confirmação de Conflitos**: Permite ao utilizador decidir se quer prosseguir após detetar um conflito
 - **Validação de Fins de Semana**: Impedimento de marcações em sábados e domingos
 
 ### 3️⃣ Visualização de Calendário
@@ -147,16 +149,16 @@ Whvwh;LW;1;22;328:F,329:F
  Mini-Sistema RH - Menu Principal 
 ============================================
  1. Adicionar Colaborador
- 2. Gerir Marcacoes (Ferias/Faltas)
- 3. Visualizar Calendario Mensal
- 4. Listar Todos os Colaboradores
- 5. Procurar Colaborador (Dados e Calendario)
- 6. Gerir Formacoes e Notas (CRUD)
---------------------------------------------
- 7. Dashboard (Resumo Anual)
- 8. Relatorio Mensal (Ausencias por Colaborador)
- 9. Estatisticas de Departamento
-10. Exportar Dados (Calendario/Relatorio)
+ 2. Remover Colaborador
+ 3. Gerir Marcacoes (Ferias/Faltas)
+ 4. Visualizar Calendario Mensal
+ 5. Listar Todos os Colaboradores
+ 6. Procurar Colaborador (Dados e Calendario)
+ 7. Gerir Formacoes e Notas (CRUD)
+ 8. Dashboard (Resumo)
+ 9. Relatorio Mensal (Ausencias por Colaborador)
+ 10. Estatisticas de Departamento
+11. Exportar Dados (Calendario/Relatorio)
 --------------------------------------------
 0. Guardar e Sair
 --------------------------------------------
@@ -173,13 +175,23 @@ Whvwh;LW;1;22;328:F,329:F
 3. Inserir departamento
 4. Sistema atribui ID automaticamente
 
-### Marcar Férias
+### Remover um Colaborador
 
 1. Escolher opção **2** no menu
+2. Selecionar colaborador (por nome ou ID)
+3. Confirmar remoção (S/N)
+4. Colaborador é removido permanentemente
+
+### Marcar Férias com Deteção de Conflitos
+
+1. Escolher opção **3** no menu
 2. Selecionar colaborador (por nome ou ID)
 3. Escolher opção **1** (Marcar Férias)
 4. Inserir data no formato: `Dia Mes Ano`
    - Exemplo: `15 12 2025`
+5. Se houver conflito, o sistema avisa:
+   - `AVISO: O colaborador 'Nome' do mesmo departamento ja tem ferias marcadas neste dia.`
+6. Escolher se quer prosseguir (S/N)
 
 ### Gerar Relatório Mensal
 
@@ -211,7 +223,9 @@ Whvwh;LW;1;22;328:F,329:F
 - ✅ Validação de datas (dias, meses, anos)
 - ✅ Deteção de anos bissextos
 - ✅ Impedimento de marcações em fins de semana
-- ✅ Verificação de conflitos de férias
+- ✅ Verificação de conflitos de férias entre colaboradores do mesmo departamento
+- ✅ Confirmação antes de prosseguir com marcações conflitantes
+- ✅ Confirmação antes de remover colaboradores
 - ✅ Validação de input numérico
 - ✅ Verificação de duplicados de nomes
 
